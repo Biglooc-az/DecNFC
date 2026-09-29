@@ -16,73 +16,152 @@
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 20px;
+      padding: 16px;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      box-sizing: border-box;
     }
 
     .container {
       background-color: var(--card-bg);
-      padding: 25px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
       text-align: center;
+      position: relative;
     }
 
-    h1 { font-size: 2rem; margin-bottom: 20px; color: var(--primary); }
+    h1 {
+      font-size: 1.8rem;
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
 
     .btn {
-      display: block; width: 100%; padding: 12px; margin: 10px 0;
-      font-size: 1rem; font-weight: 600; color: white;
-      background-color: var(--primary); border: none; border-radius: 10px;
-      cursor: pointer; transition: background-color 0.2s, transform 0.1s;
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      background-color: var(--primary);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.05s ease, opacity 0.15s ease;
+      box-sizing: border-box;
     }
 
-    .btn:hover { background-color: var(--primary-hover); }
-    .btn:active { transform: scale(0.98); }
+    .btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
     .btn-secondary { background-color: #6b7280; }
     .btn-danger { background-color: var(--error); }
-    .btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
     input[type="password"], select {
-      width: 100%; padding: 12px; font-size: 1rem; margin: 10px 0;
-      border: 2px solid #d1d5db; border-radius: 8px; box-sizing: border-box; outline: none;
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      margin: 8px 0 16px 0;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      box-sizing: border-box;
+      outline: none;
+      background-color: #f9fafb;
     }
 
-    .section { display: none; }
-    .section.active { display: block; }
-
-    .nfc-icon { font-size: 3.5rem; margin: 15px 0; animation: pulse 1.5s infinite; }
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.1); opacity: 1; }
-      100% { transform: scale(1); opacity: 0.8; }
+    /* Transición instantánea usando CSS puro */
+    .section {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.15s ease-in-out;
     }
 
-    .decimas-badge { font-size: 2.5rem; font-weight: bold; color: var(--primary); margin: 15px 0; }
+    .section.active {
+      display: block;
+      opacity: 1;
+    }
+
+    .nfc-icon {
+      font-size: 3rem;
+      margin: 10px 0;
+    }
+
+    .decimas-badge {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 10px 0;
+    }
 
     .history-list {
-      text-align: left; max-height: 180px; overflow-y: auto;
-      border: 1px solid #e5e7eb; padding: 10px; border-radius: 8px; background: #fafafa;
+      text-align: left;
+      max-height: 180px;
+      overflow-y: auto;
+      border: 1px solid #f3f4f6;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: #fafafa;
     }
 
     .history-item {
-      display: flex; justify-content: space-between; padding: 6px 0;
-      border-bottom: 1px solid #eee; font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 0.9rem;
     }
 
-    .btn-group { display: flex; gap: 10px; margin: 10px 0; }
+    .history-item:last-child { border-bottom: none; }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin: 8px 0;
+    }
+
     .btn-group .btn { margin: 0; }
-    .block-title { text-align: left; font-weight: bold; margin-top: 15px; margin-bottom: 5px; color: #374151; }
-    .loading { color: var(--primary); font-weight: bold; margin: 10px 0; }
+
+    .block-title {
+      text-align: left;
+      font-weight: 700;
+      margin-top: 14px;
+      margin-bottom: 4px;
+      color: #374151;
+      font-size: 0.95rem;
+    }
+
+    /* Banner de notificación interno de la web */
+    .toast {
+      display: none;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    .toast-success { background-color: #d1fae5; color: #065f46; }
+    .toast-error { background-color: #fee2e2; color: #991b1b; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
@@ -90,32 +169,51 @@
   <div class="container">
     <h1>JAAA Décimas</h1>
 
-    <!-- 1. PANTALLA PRINCIPAL -->
+    <!-- BANNER DE NOTIFICACIÓN INTERNA -->
+    <div id="toast-banner" class="toast"></div>
+
+    <!-- 1. PANTALLA INICIO (Si entra sin tarjeta) -->
     <div id="pantalla-inicio" class="section active">
-      <button class="btn" onclick="mostrarSeccion('pantalla-consulta')">Consultar Décimas</button>
-      <button class="btn btn-secondary" onclick="mostrarSeccion('pantalla-pin')">Ingreso Profesor</button>
+      <div class="nfc-icon">💳</div>
+      <p>Acerca tu tarjeta NFC al dispositivo para ver tus décimas.</p>
+      <button class="btn btn-secondary" onclick="mostrarSeccion('pantalla-pin')">Acceso Profesor</button>
     </div>
 
-    <!-- 2. INGRESO DE PIN PROFESOR -->
+    <!-- 2. PANTALLA CONSULTA ESTUDIANTE (Entrada Directa por NFC) -->
+    <div id="pantalla-consulta" class="section">
+      <h3 id="estudiante-nombre">Estudiante</h3>
+      <div>Saldo Total:</div>
+      <div class="decimas-badge" id="estudiante-total-decimas">0</div>
+      
+      <h4>Últimos Movimientos</h4>
+      <div class="history-list" id="estudiante-historial"></div>
+
+      <hr style="border:0; border-top:1px solid #f3f4f6; margin: 20px 0 15px 0;">
+      
+      <!-- Opción de Acceso Profesor al final -->
+      <button class="btn btn-secondary" onclick="mostrarSeccion('pantalla-pin')">Acceso Profesor</button>
+    </div>
+
+    <!-- 3. INGRESO DE PIN PROFESOR -->
     <div id="pantalla-pin" class="section">
       <h3>Acceso Docente</h3>
       <p>Ingresa el PIN de seguridad:</p>
       <input type="password" id="pinInput" placeholder="••••" maxlength="4" inputmode="numeric">
       <button class="btn" onclick="validarPin()">Ingresar</button>
-      <button class="btn btn-secondary" onclick="volverInicio()">Volver</button>
+      <button class="btn btn-secondary" onclick="volverConsultaOInicio()">Volver</button>
     </div>
 
-    <!-- 3. PANTALLA PROFESOR - ESPERANDO TARJETA -->
+    <!-- 4. PANTALLA PROFESOR - ESPERANDO TARJETA -->
     <div id="pantalla-espera-profesor" class="section">
       <h3>Modo Gestión Profesor</h3>
       <div class="nfc-icon">📲</div>
-      <p><strong>Por favor, acerca la tarjeta (chip NFC) al lector para gestionar las décimas.</strong></p>
+      <p><strong>Por favor, acerca la tarjeta (chip NFC) del estudiante.</strong></p>
       <button class="btn btn-secondary" onclick="cerrarSesionProfe()">Cerrar Sesión</button>
     </div>
 
-    <!-- 4. PANTALLA PROFESOR - GESTIONAR ALUMNO -->
+    <!-- 5. PANTALLA PROFESOR - GESTIONAR ALUMNO -->
     <div id="pantalla-gestion-profesor" class="section">
-      <h3 id="profe-nombre-alumno">Cargando...</h3>
+      <h3 id="profe-nombre-alumno">Estudiante</h3>
       <div>Décimas Actuales:</div>
       <div class="decimas-badge" id="profe-total-decimas">0</div>
 
@@ -127,12 +225,12 @@
         <option value="Buena Actitud">Buena Actitud</option>
       </select>
       <div class="btn-group">
-        <button class="btn btn-action" onclick="modificarDecimas(1, 'motivoAgregarSelect')">+1</button>
-        <button class="btn btn-action" onclick="modificarDecimas(2, 'motivoAgregarSelect')">+2</button>
-        <button class="btn btn-action" onclick="modificarDecimas(3, 'motivoAgregarSelect')">+3</button>
+        <button class="btn" onclick="modificarDecimas(1, 'motivoAgregarSelect')">+1</button>
+        <button class="btn" onclick="modificarDecimas(2, 'motivoAgregarSelect')">+2</button>
+        <button class="btn" onclick="modificarDecimas(3, 'motivoAgregarSelect')">+3</button>
       </div>
 
-      <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+      <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 15px 0;">
 
       <div class="block-title">➖ Quitar Décimas:</div>
       <select id="motivoQuitarSelect">
@@ -141,69 +239,63 @@
         <option value="Otro">Otro</option>
       </select>
       <div class="btn-group">
-        <button class="btn btn-danger btn-action" onclick="modificarDecimas(-1, 'motivoQuitarSelect')">-1</button>
-        <button class="btn btn-danger btn-action" onclick="modificarDecimas(-2, 'motivoQuitarSelect')">-2</button>
-        <button class="btn btn-danger btn-action" onclick="modificarDecimas(-3, 'motivoQuitarSelect')">-3</button>
+        <button class="btn btn-danger" onclick="modificarDecimas(-1, 'motivoQuitarSelect')">-1</button>
+        <button class="btn btn-danger" onclick="modificarDecimas(-2, 'motivoQuitarSelect')">-2</button>
+        <button class="btn btn-danger" onclick="modificarDecimas(-3, 'motivoQuitarSelect')">-3</button>
       </div>
 
-      <div id="profe-status" class="loading" style="display:none;">Guardando en Google Sheets...</div>
-
-      <button class="btn btn-secondary" style="margin-top: 25px;" onclick="mostrarSeccion('pantalla-espera-profesor')">Escanear otro alumno</button>
+      <button class="btn btn-secondary" style="margin-top: 20px;" onclick="mostrarSeccion('pantalla-espera-profesor')">Escanear otro alumno</button>
       <button class="btn btn-secondary" onclick="cerrarSesionProfe()">Cerrar Sesión</button>
-    </div>
-
-    <!-- 5. PANTALLA CONSULTA ESTUDIANTE -->
-    <div id="pantalla-consulta" class="section">
-      <div id="esperando-tarjeta-estudiante">
-        <h3>Consultar mis Décimas</h3>
-        <div class="nfc-icon">💳</div>
-        <p>Acerca tu tarjeta NFC al dispositivo para ver tus décimas y movimientos.</p>
-        <button class="btn btn-secondary" onclick="volverInicio()">Volver</button>
-      </div>
-
-      <div id="vista-perfil-estudiante" style="display:none;">
-        <h3 id="estudiante-nombre">Estudiante</h3>
-        <div>Saldo Total:</div>
-        <div class="decimas-badge" id="estudiante-total-decimas">0</div>
-        <h4>Últimos Movimientos</h4>
-        <div class="history-list" id="estudiante-historial"></div>
-        <button class="btn btn-secondary" style="margin-top: 15px;" onclick="volverInicio()">Volver</button>
-      </div>
     </div>
 
   </div>
 
   <script>
-    // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT (Asegúrate de que termine en /exec)
-    const API_URL = "https://script.google.com/macros/s/AKfycbw2j2lVM8-E9-dNBZkoVVEICJ7l0DeYVk2OF4F6f0g4QNX9YCjJEWHnZY3RYDnMFyoa/exec";
+    const API_URL = "TU_URL_DE_APPS_SCRIPT_AQUI";
     const PIN_CORRECTO = "1976";
 
     let baseDatos = {};
     let alumnoActualId = null;
 
+    // Muestra notificaciones tipo banner en la web
+    function mostrarToast(mensaje, esError = false) {
+      const toast = document.getElementById('toast-banner');
+      toast.innerText = mensaje;
+      toast.className = `toast ${esError ? 'toast-error' : 'toast-success'}`;
+      toast.style.display = 'block';
+
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
     async function cargarBaseDatos() {
       try {
         const res = await fetch(API_URL);
-        if (!res.ok) throw new Error("Error en la solicitud HTTP");
-        baseDatos = await res.json();
+        if (res.ok) {
+          baseDatos = await res.json();
+          if (alumnoActualId) actualizarPantallas(alumnoActualId);
+        }
       } catch (err) {
-        console.error("Error al conectar con Google Sheets:", err);
+        console.error("Error al sincronizar datos:", err);
       }
     }
 
-    window.onload = async function() {
-      await cargarBaseDatos();
-
+    window.onload = function() {
       const urlParams = new URLSearchParams(window.location.search);
-      const idParam = urlParams.get('id');
+      alumnoActualId = urlParams.get('id');
 
-      if (idParam) {
-        alumnoActualId = idParam;
+      // Intentar cargar datos en segundo plano
+      cargarBaseDatos();
+
+      if (alumnoActualId) {
         if (sessionStorage.getItem('profe_session') === 'true') {
-          cargarModoProfesor(idParam);
+          cargarModoProfesor(alumnoActualId);
         } else {
-          cargarModoEstudiante(idParam);
+          cargarModoEstudiante(alumnoActualId);
         }
+      } else {
+        mostrarSeccion('pantalla-inicio');
       }
     };
 
@@ -212,39 +304,44 @@
       document.getElementById(idSeccion).classList.add('active');
     }
 
-    function volverInicio() {
+    function volverConsultaOInicio() {
       document.getElementById('pinInput').value = '';
-      window.history.pushState({}, document.title, window.location.pathname);
-      mostrarSeccion('pantalla-inicio');
+      if (alumnoActualId) {
+        mostrarSeccion('pantalla-consulta');
+      } else {
+        mostrarSeccion('pantalla-inicio');
+      }
     }
 
     function validarPin() {
       const pinIngresado = document.getElementById('pinInput').value;
       if (pinIngresado === PIN_CORRECTO) {
         sessionStorage.setItem('profe_session', 'true');
+        document.getElementById('pinInput').value = '';
         if (alumnoActualId) {
           cargarModoProfesor(alumnoActualId);
         } else {
           mostrarSeccion('pantalla-espera-profesor');
         }
       } else {
-        alert("PIN incorrecto");
-        volverInicio();
+        mostrarToast("PIN incorrecto", true);
+        document.getElementById('pinInput').value = '';
       }
     }
 
     function cerrarSesionProfe() {
       sessionStorage.removeItem('profe_session');
-      volverInicio();
+      volverConsultaOInicio();
     }
 
-    function cargarModoEstudiante(id) {
+    function actualizarPantallas(id) {
       const alumno = baseDatos[id] || { nombre: `Alumno (${id})`, decimas: 0, historial: [] };
-
-      document.getElementById('esperando-tarjeta-estudiante').style.display = 'none';
-      document.getElementById('vista-perfil-estudiante').style.display = 'block';
+      
+      // Actualizar valores en DOM
       document.getElementById('estudiante-nombre').innerText = alumno.nombre;
       document.getElementById('estudiante-total-decimas').innerText = alumno.decimas;
+      document.getElementById('profe-nombre-alumno').innerText = alumno.nombre;
+      document.getElementById('profe-total-decimas').innerText = alumno.decimas;
 
       const historialContainer = document.getElementById('estudiante-historial');
       historialContainer.innerHTML = '';
@@ -261,13 +358,15 @@
           historialContainer.appendChild(div);
         });
       }
+    }
+
+    function cargarModoEstudiante(id) {
+      actualizarPantallas(id);
       mostrarSeccion('pantalla-consulta');
     }
 
     function cargarModoProfesor(id) {
-      const alumno = baseDatos[id] || { nombre: `Alumno (${id})`, decimas: 0 };
-      document.getElementById('profe-nombre-alumno').innerText = alumno.nombre;
-      document.getElementById('profe-total-decimas').innerText = alumno.decimas;
+      actualizarPantallas(id);
       mostrarSeccion('pantalla-gestion-profesor');
     }
 
@@ -275,14 +374,28 @@
       if (!alumnoActualId) return;
 
       const motivo = document.getElementById(selectId).value;
-      const statusDiv = document.getElementById('profe-status');
-      
-      document.querySelectorAll('.btn-action').forEach(b => b.disabled = true);
-      statusDiv.style.display = 'block';
 
+      // 1. Actualización optimista e inmediata de la UI local (0 retraso)
+      if (!baseDatos[alumnoActualId]) {
+        baseDatos[alumnoActualId] = { nombre: `Alumno (${alumnoActualId})`, decimas: 0, historial: [] };
+      }
+
+      baseDatos[alumnoActualId].decimas += cantidad;
+      const ahora = new Date();
+      const fecha = `${ahora.getDate()}/${ahora.getMonth()+1} ${ahora.getHours()}:${String(ahora.getMinutes()).padStart(2, '0')}`;
+      
+      baseDatos[alumnoActualId].historial.push({
+        cantidad: cantidad,
+        motivo: motivo,
+        fecha: fecha
+      });
+
+      actualizarPantallas(alumnoActualId);
+      mostrarToast(`${cantidad > 0 ? '+' : ''}${cantidad} décima(s) guardadas`);
+
+      // 2. Envío en segundo plano a Google Sheets sin bloquear la pantalla
       try {
-        // Petición estándar POST usando text/plain para evitar bloqueos CORS en Apps Script
-        const res = await fetch(API_URL, {
+        fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({
@@ -291,17 +404,8 @@
             motivo: motivo
           })
         });
-
-        // Recargar datos actualizados desde la planilla
-        await cargarBaseDatos();
-        cargarModoProfesor(alumnoActualId);
-        alert(`Guardado con éxito: ${cantidad > 0 ? '+' : ''}${cantidad} décima(s) por "${motivo}".`);
       } catch (err) {
-        console.error("Error al guardar:", err);
-        alert("Ocurrió un error al intentar guardar en Google Sheets.");
-      } finally {
-        document.querySelectorAll('.btn-action').forEach(b => b.disabled = false);
-        statusDiv.style.display = 'none';
+        console.error("Error al sincronizar en segundo plano:", err);
       }
     }
   </script>
