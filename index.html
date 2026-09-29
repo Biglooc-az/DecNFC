@@ -37,98 +37,52 @@
       text-align: center;
     }
 
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 20px;
-      color: var(--primary);
-    }
+    h1 { font-size: 2rem; margin-bottom: 20px; color: var(--primary); }
 
     .btn {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 1rem;
-      font-weight: 600;
-      color: white;
-      background-color: var(--primary);
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.2s, transform 0.1s;
+      display: block; width: 100%; padding: 12px; margin: 10px 0;
+      font-size: 1rem; font-weight: 600; color: white;
+      background-color: var(--primary); border: none; border-radius: 10px;
+      cursor: pointer; transition: background-color 0.2s, transform 0.1s;
     }
 
     .btn:hover { background-color: var(--primary-hover); }
     .btn:active { transform: scale(0.98); }
     .btn-secondary { background-color: #6b7280; }
     .btn-danger { background-color: var(--error); }
+    .btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
     input[type="password"], select {
-      width: 100%;
-      padding: 12px;
-      font-size: 1rem;
-      margin: 10px 0;
-      border: 2px solid #d1d5db;
-      border-radius: 8px;
-      box-sizing: border-box;
-      outline: none;
+      width: 100%; padding: 12px; font-size: 1rem; margin: 10px 0;
+      border: 2px solid #d1d5db; border-radius: 8px; box-sizing: border-box; outline: none;
     }
 
     .section { display: none; }
     .section.active { display: block; }
 
-    .nfc-icon {
-      font-size: 3.5rem;
-      margin: 15px 0;
-      animation: pulse 1.5s infinite;
-    }
-
+    .nfc-icon { font-size: 3.5rem; margin: 15px 0; animation: pulse 1.5s infinite; }
     @keyframes pulse {
       0% { transform: scale(1); opacity: 0.8; }
       50% { transform: scale(1.1); opacity: 1; }
       100% { transform: scale(1); opacity: 0.8; }
     }
 
-    .decimas-badge {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: var(--primary);
-      margin: 15px 0;
-    }
+    .decimas-badge { font-size: 2.5rem; font-weight: bold; color: var(--primary); margin: 15px 0; }
 
     .history-list {
-      text-align: left;
-      max-height: 180px;
-      overflow-y: auto;
-      border: 1px solid #e5e7eb;
-      padding: 10px;
-      border-radius: 8px;
-      background: #fafafa;
+      text-align: left; max-height: 180px; overflow-y: auto;
+      border: 1px solid #e5e7eb; padding: 10px; border-radius: 8px; background: #fafafa;
     }
 
     .history-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px solid #eee;
-      font-size: 0.9rem;
+      display: flex; justify-content: space-between; padding: 6px 0;
+      border-bottom: 1px solid #eee; font-size: 0.9rem;
     }
 
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      margin: 10px 0;
-    }
-
+    .btn-group { display: flex; gap: 10px; margin: 10px 0; }
     .btn-group .btn { margin: 0; }
-
-    .block-title {
-      text-align: left;
-      font-weight: bold;
-      margin-top: 15px;
-      margin-bottom: 5px;
-      color: #374151;
-    }
+    .block-title { text-align: left; font-weight: bold; margin-top: 15px; margin-bottom: 5px; color: #374151; }
+    .loading { color: var(--primary); font-weight: bold; margin: 10px 0; }
   </style>
 </head>
 <body>
@@ -161,11 +115,10 @@
 
     <!-- 4. PANTALLA PROFESOR - GESTIONAR ALUMNO -->
     <div id="pantalla-gestion-profesor" class="section">
-      <h3 id="profe-nombre-alumno">Estudiante</h3>
+      <h3 id="profe-nombre-alumno">Cargando...</h3>
       <div>Décimas Actuales:</div>
       <div class="decimas-badge" id="profe-total-decimas">0</div>
 
-      <!-- SECCIÓN SUMAR DÉCIMAS -->
       <div class="block-title">➕ Agregar Décimas:</div>
       <select id="motivoAgregarSelect">
         <option value="Guia Completa">Guía Completa</option>
@@ -174,14 +127,13 @@
         <option value="Buena Actitud">Buena Actitud</option>
       </select>
       <div class="btn-group">
-        <button class="btn" onclick="modificarDecimas(1, 'motivoAgregarSelect')">+1</button>
-        <button class="btn" onclick="modificarDecimas(2, 'motivoAgregarSelect')">+2</button>
-        <button class="btn" onclick="modificarDecimas(3, 'motivoAgregarSelect')">+3</button>
+        <button class="btn btn-action" onclick="modificarDecimas(1, 'motivoAgregarSelect')">+1</button>
+        <button class="btn btn-action" onclick="modificarDecimas(2, 'motivoAgregarSelect')">+2</button>
+        <button class="btn btn-action" onclick="modificarDecimas(3, 'motivoAgregarSelect')">+3</button>
       </div>
 
       <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;">
 
-      <!-- SECCIÓN RESTAR DÉCIMAS -->
       <div class="block-title">➖ Quitar Décimas:</div>
       <select id="motivoQuitarSelect">
         <option value="Cobradas">Cobradas</option>
@@ -189,10 +141,12 @@
         <option value="Otro">Otro</option>
       </select>
       <div class="btn-group">
-        <button class="btn btn-danger" onclick="modificarDecimas(-1, 'motivoQuitarSelect')">-1</button>
-        <button class="btn btn-danger" onclick="modificarDecimas(-2, 'motivoQuitarSelect')">-2</button>
-        <button class="btn btn-danger" onclick="modificarDecimas(-3, 'motivoQuitarSelect')">-3</button>
+        <button class="btn btn-danger btn-action" onclick="modificarDecimas(-1, 'motivoQuitarSelect')">-1</button>
+        <button class="btn btn-danger btn-action" onclick="modificarDecimas(-2, 'motivoQuitarSelect')">-2</button>
+        <button class="btn btn-danger btn-action" onclick="modificarDecimas(-3, 'motivoQuitarSelect')">-3</button>
       </div>
+
+      <div id="profe-status" class="loading" style="display:none;">Guardando en Google Sheets...</div>
 
       <button class="btn btn-secondary" style="margin-top: 25px;" onclick="mostrarSeccion('pantalla-espera-profesor')">Escanear otro alumno</button>
       <button class="btn btn-secondary" onclick="cerrarSesionProfe()">Cerrar Sesión</button>
@@ -220,36 +174,31 @@
   </div>
 
   <script>
+    // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT
+    const API_URL = "https://script.google.com/macros/s/AKfycbw2j2lVM8-E9-dNBZkoVVEICJ7l0DeYVk2OF4F6f0g4QNX9YCjJEWHnZY3RYDnMFyoa/exec";
     const PIN_CORRECTO = "1976";
-    let esProfeAutenticado = false;
+
+    let baseDatos = {};
     let alumnoActualId = null;
 
-    // Obtención de datos locales
-    function obtenerDatosAlumno(id) {
-      const data = localStorage.getItem(`alumno_${id}`);
-      if (data) return JSON.parse(data);
-      
-      return {
-        nombre: `Estudiante (${id})`,
-        decimas: 0,
-        historial: []
-      };
+    async function cargarBaseDatos() {
+      try {
+        const res = await fetch(API_URL);
+        baseDatos = await res.json();
+      } catch (err) {
+        console.error("Error al conectar con Google Sheets:", err);
+      }
     }
 
-    function guardarDatosAlumno(id, datos) {
-      localStorage.setItem(`alumno_${id}`, JSON.stringify(datos));
-    }
+    window.onload = async function() {
+      await cargarBaseDatos();
 
-    // Detección automática del parámetro ?id=XXX
-    window.onload = function() {
       const urlParams = new URLSearchParams(window.location.search);
       const idParam = urlParams.get('id');
 
       if (idParam) {
         alumnoActualId = idParam;
-        
         if (sessionStorage.getItem('profe_session') === 'true') {
-          esProfeAutenticado = true;
           cargarModoProfesor(idParam);
         } else {
           cargarModoEstudiante(idParam);
@@ -271,9 +220,7 @@
     function validarPin() {
       const pinIngresado = document.getElementById('pinInput').value;
       if (pinIngresado === PIN_CORRECTO) {
-        esProfeAutenticado = true;
         sessionStorage.setItem('profe_session', 'true');
-        
         if (alumnoActualId) {
           cargarModoProfesor(alumnoActualId);
         } else {
@@ -286,23 +233,22 @@
     }
 
     function cerrarSesionProfe() {
-      esProfeAutenticado = false;
       sessionStorage.removeItem('profe_session');
       volverInicio();
     }
 
     function cargarModoEstudiante(id) {
-      const alumno = obtenerDatosAlumno(id);
+      const alumno = baseDatos[id] || { nombre: `Alumno (${id})`, decimas: 0, historial: [] };
+
       document.getElementById('esperando-tarjeta-estudiante').style.display = 'none';
       document.getElementById('vista-perfil-estudiante').style.display = 'block';
-      
       document.getElementById('estudiante-nombre').innerText = alumno.nombre;
       document.getElementById('estudiante-total-decimas').innerText = alumno.decimas;
-      
+
       const historialContainer = document.getElementById('estudiante-historial');
       historialContainer.innerHTML = '';
-      
-      if (alumno.historial.length === 0) {
+
+      if (!alumno.historial || alumno.historial.length === 0) {
         historialContainer.innerHTML = '<div style="text-align:center; color:#888;">Sin movimientos aún.</div>';
       } else {
         alumno.historial.slice().reverse().forEach(item => {
@@ -314,36 +260,48 @@
           historialContainer.appendChild(div);
         });
       }
-      
       mostrarSeccion('pantalla-consulta');
     }
 
     function cargarModoProfesor(id) {
-      const alumno = obtenerDatosAlumno(id);
+      const alumno = baseDatos[id] || { nombre: `Alumno (${id})`, decimas: 0 };
       document.getElementById('profe-nombre-alumno').innerText = alumno.nombre;
       document.getElementById('profe-total-decimas').innerText = alumno.decimas;
       mostrarSeccion('pantalla-gestion-profesor');
     }
 
-    function modificarDecimas(cantidad, selectId) {
+    async function modificarDecimas(cantidad, selectId) {
       if (!alumnoActualId) return;
 
       const motivo = document.getElementById(selectId).value;
-      const alumno = obtenerDatosAlumno(alumnoActualId);
+      const statusDiv = document.getElementById('profe-status');
       
-      alumno.decimas += cantidad;
-      const ahora = new Date();
-      const fechaFormateada = `${ahora.getDate()}/${ahora.getMonth()+1} ${ahora.getHours()}:${String(ahora.getMinutes()).padStart(2, '0')}`;
-      
-      alumno.historial.push({
-        cantidad: cantidad,
-        motivo: motivo,
-        fecha: fechaFormateada
-      });
+      // Deshabilitar botones durante el envío
+      document.querySelectorAll('.btn-action').forEach(b => b.disabled = true);
+      statusDiv.style.display = 'block';
 
-      guardarDatosAlumno(alumnoActualId, alumno);
-      document.getElementById('profe-total-decimas').innerText = alumno.decimas;
-      alert(`Se ${cantidad > 0 ? 'agregaron' : 'quitaron'} ${Math.abs(cantidad)} décima(s) por "${motivo}".`);
+      try {
+        await fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id_alu: alumnoActualId,
+            cant: cantidad,
+            motivo: motivo
+          })
+        });
+
+        // Recargar datos desde la planilla
+        await cargarBaseDatos();
+        cargarModoProfesor(alumnoActualId);
+        alert(`Guardado: ${cantidad > 0 ? '+' : ''}${cantidad} por "${motivo}".`);
+      } catch (err) {
+        alert("Error al guardar en Google Sheets.");
+      } finally {
+        document.querySelectorAll('.btn-action').forEach(b => b.disabled = false);
+        statusDiv.style.display = 'none';
+      }
     }
   </script>
 </body>
