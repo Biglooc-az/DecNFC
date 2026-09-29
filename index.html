@@ -61,6 +61,23 @@
       background-color: #f9fafb;
     }
 
+    .filter-container {
+      text-align: left;
+      margin-bottom: 12px;
+    }
+
+    .filter-container label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #4b5563;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .filter-container select {
+      margin-bottom: 0;
+    }
+
     .section { display: none; opacity: 0; transition: opacity 0.15s ease-in-out; }
     .section.active { display: block; opacity: 1; }
 
@@ -157,6 +174,18 @@
       <div class="tab-group">
         <button class="tab-btn active" id="tab-lista-btn" onclick="cambiarTab('lista')">Ver Todos</button>
         <button class="tab-btn" id="tab-rafaga-btn" onclick="cambiarTab('rafaga')">Modo Ráfaga ⚡</button>
+      </div>
+
+      <!-- FILTRO POR CURSO PARA EL PROFESOR -->
+      <div class="filter-container">
+        <label for="filtroCurso">Filtrar por curso:</label>
+        <select id="filtroCurso" onchange="renderizarPanelProfesor()">
+          <option value="Todos">Todos</option>
+          <option value="10th grade">10th grade</option>
+          <option value="11th grade A">11th grade A</option>
+          <option value="12th grade A">12th grade A</option>
+          <option value="12th grade B">12th grade B</option>
+        </select>
       </div>
 
       <!-- SUB-PESTAÑA 1: LISTA COMPLETA DE ALUMNOS -->
@@ -385,25 +414,48 @@
     function renderizarPanelProfesor() {
       const contenedorLista = document.getElementById('contenedor-lista-alumnos');
       const contenedorRafaga = document.getElementById('contenedor-rafaga-alumnos');
+      const cursoSeleccionado = document.getElementById('filtroCurso') ? document.getElementById('filtroCurso').value : 'Todos';
+
+      let alumnos = [];
+
+      // Extraer y estructurar alumnos desde la baseDatos
+      Object.keys(baseDatos).forEach(id => {
+        if (id === ID_PROFESOR) return; // Ocultar tarjeta del profesor
+
+        const alu = baseDatos[id];
+        alumnos.push({
+          id: id,
+          nombre: alu.nombre || '',
+          apellido: alu.apellido || '',
+          curso: alu.curso || 'Sin curso',
+          decimas: alu.decimas || 0
+        });
+      });
+
+      // 1. Filtrar por curso según la opción seleccionada
+      if (cursoSeleccionado !== "Todos") {
+        alumnos = alumnos.filter(alu => alu.curso === cursoSeleccionado);
+      }
+
+      // 2. Ordenar alfabéticamente por apellido
+      alumnos.sort((a, b) => 
+        a.apellido.localeCompare(b.apellido, "es", { sensitivity: "base" })
+      );
 
       let htmlLista = '';
       let htmlRafaga = '';
 
-      Object.keys(baseDatos).forEach(id => {
-        if (id === ID_PROFESOR) return; // Ocultar tarjeta de profesor de la lista
-
-        const alu = baseDatos[id];
-        const nombreCompleto = `${alu.nombre || ''} ${alu.apellido || ''}`.trim();
-        const curso = alu.curso || 'Sin curso';
+      alumnos.forEach(alu => {
+        const nombreCompleto = `${alu.nombre} ${alu.apellido}`.trim();
 
         // Fila para Lista General
         htmlLista += `
           <div class="student-row">
             <div class="student-info">
               <b>${nombreCompleto}</b>
-              <small>${curso} - Décimas: <b>${alu.decimas || 0}</b></small>
+              <small>${alu.curso} - Décimas: <b>${alu.decimas}</b></small>
             </div>
-            <button class="btn-small btn" onclick="seleccionarAlumnoIndividual('${id}')">Gestionar</button>
+            <button class="btn-small btn" onclick="seleccionarAlumnoIndividual('${alu.id}')">Gestionar</button>
           </div>
         `;
 
@@ -411,18 +463,18 @@
         htmlRafaga += `
           <div class="student-row">
             <label class="checkbox-row">
-              <input type="checkbox" class="chk-rafaga" value="${id}">
+              <input type="checkbox" class="chk-rafaga" value="${alu.id}">
               <div class="student-info">
                 <b>${nombreCompleto}</b>
-                <small>${curso} (Saldo: ${alu.decimas || 0})</small>
+                <small>${alu.curso} (Saldo: ${alu.decimas})</small>
               </div>
             </label>
           </div>
         `;
       });
 
-      contenedorLista.innerHTML = htmlLista || '<p style="color:#888;">No hay alumnos registrados</p>';
-      contenedorRafaga.innerHTML = htmlRafaga || '<p style="color:#888;">No hay alumnos registrados</p>';
+      contenedorLista.innerHTML = htmlLista || '<p style="color:#888; text-align:center;">No hay alumnos en este curso</p>';
+      contenedorRafaga.innerHTML = htmlRafaga || '<p style="color:#888; text-align:center;">No hay alumnos en este curso</p>';
     }
 
     function seleccionarAlumnoIndividual(id) {
