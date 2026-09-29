@@ -174,7 +174,7 @@
   </div>
 
   <script>
-    // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT
+    // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT (Asegúrate de que termine en /exec)
     const API_URL = "https://script.google.com/macros/s/AKfycbw2j2lVM8-E9-dNBZkoVVEICJ7l0DeYVk2OF4F6f0g4QNX9YCjJEWHnZY3RYDnMFyoa/exec";
     const PIN_CORRECTO = "1976";
 
@@ -184,6 +184,7 @@
     async function cargarBaseDatos() {
       try {
         const res = await fetch(API_URL);
+        if (!res.ok) throw new Error("Error en la solicitud HTTP");
         baseDatos = await res.json();
       } catch (err) {
         console.error("Error al conectar con Google Sheets:", err);
@@ -276,15 +277,14 @@
       const motivo = document.getElementById(selectId).value;
       const statusDiv = document.getElementById('profe-status');
       
-      // Deshabilitar botones durante el envío
       document.querySelectorAll('.btn-action').forEach(b => b.disabled = true);
       statusDiv.style.display = 'block';
 
       try {
-        await fetch(API_URL, {
+        // Petición estándar POST usando text/plain para evitar bloqueos CORS en Apps Script
+        const res = await fetch(API_URL, {
           method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({
             id_alu: alumnoActualId,
             cant: cantidad,
@@ -292,12 +292,13 @@
           })
         });
 
-        // Recargar datos desde la planilla
+        // Recargar datos actualizados desde la planilla
         await cargarBaseDatos();
         cargarModoProfesor(alumnoActualId);
-        alert(`Guardado: ${cantidad > 0 ? '+' : ''}${cantidad} por "${motivo}".`);
+        alert(`Guardado con éxito: ${cantidad > 0 ? '+' : ''}${cantidad} décima(s) por "${motivo}".`);
       } catch (err) {
-        alert("Error al guardar en Google Sheets.");
+        console.error("Error al guardar:", err);
+        alert("Ocurrió un error al intentar guardar en Google Sheets.");
       } finally {
         document.querySelectorAll('.btn-action').forEach(b => b.disabled = false);
         statusDiv.style.display = 'none';
