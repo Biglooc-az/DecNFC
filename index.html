@@ -82,7 +82,6 @@
       background-color: #f9fafb;
     }
 
-    /* Transición instantánea usando CSS puro */
     .section {
       display: none;
       opacity: 0;
@@ -144,7 +143,6 @@
       font-size: 0.95rem;
     }
 
-    /* Banner de notificación interno de la web */
     .toast {
       display: none;
       padding: 12px;
@@ -169,19 +167,18 @@
   <div class="container">
     <h1>JAAA Décimas</h1>
 
-    <!-- BANNER DE NOTIFICACIÓN INTERNA -->
     <div id="toast-banner" class="toast"></div>
 
-    <!-- 1. PANTALLA INICIO (Si entra sin tarjeta) -->
+    <!-- 1. PANTALLA INICIO -->
     <div id="pantalla-inicio" class="section active">
       <div class="nfc-icon">💳</div>
       <p>Acerca tu tarjeta NFC al dispositivo para ver tus décimas.</p>
       <button class="btn btn-secondary" onclick="mostrarSeccion('pantalla-pin')">Acceso Profesor</button>
     </div>
 
-    <!-- 2. PANTALLA CONSULTA ESTUDIANTE (Entrada Directa por NFC) -->
+    <!-- 2. PANTALLA CONSULTA ESTUDIANTE -->
     <div id="pantalla-consulta" class="section">
-      <h3 id="estudiante-nombre">Estudiante</h3>
+      <h3 id="estudiante-nombre">Cargando...</h3>
       <div>Saldo Total:</div>
       <div class="decimas-badge" id="estudiante-total-decimas">0</div>
       
@@ -189,8 +186,6 @@
       <div class="history-list" id="estudiante-historial"></div>
 
       <hr style="border:0; border-top:1px solid #f3f4f6; margin: 20px 0 15px 0;">
-      
-      <!-- Opción de Acceso Profesor al final -->
       <button class="btn btn-secondary" onclick="mostrarSeccion('pantalla-pin')">Acceso Profesor</button>
     </div>
 
@@ -213,7 +208,7 @@
 
     <!-- 5. PANTALLA PROFESOR - GESTIONAR ALUMNO -->
     <div id="pantalla-gestion-profesor" class="section">
-      <h3 id="profe-nombre-alumno">Estudiante</h3>
+      <h3 id="profe-nombre-alumno">Cargando...</h3>
       <div>Décimas Actuales:</div>
       <div class="decimas-badge" id="profe-total-decimas">0</div>
 
@@ -251,22 +246,31 @@
   </div>
 
   <script>
+    // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT
     const API_URL = "TU_URL_DE_APPS_SCRIPT_AQUI";
     const PIN_CORRECTO = "1976";
 
     let baseDatos = {};
     let alumnoActualId = null;
 
-    // Muestra notificaciones tipo banner en la web
+    // Cargar caché local para respuesta inmediata
+    function cargarCacheLocal() {
+      const cache = localStorage.getItem('cache_alumnos');
+      if (cache) {
+        try { baseDatos = JSON.parse(cache); } catch(e){}
+      }
+    }
+
+    function guardarCacheLocal() {
+      localStorage.setItem('cache_alumnos', JSON.stringify(baseDatos));
+    }
+
     function mostrarToast(mensaje, esError = false) {
       const toast = document.getElementById('toast-banner');
       toast.innerText = mensaje;
       toast.className = `toast ${esError ? 'toast-error' : 'toast-success'}`;
       toast.style.display = 'block';
-
-      setTimeout(() => {
-        toast.style.display = 'none';
-      }, 3000);
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
     }
 
     async function cargarBaseDatos() {
@@ -274,6 +278,7 @@
         const res = await fetch(API_URL);
         if (res.ok) {
           baseDatos = await res.json();
+          guardarCacheLocal();
           if (alumnoActualId) actualizarPantallas(alumnoActualId);
         }
       } catch (err) {
@@ -282,13 +287,13 @@
     }
 
     window.onload = function() {
+      cargarCacheLocal(); // 1. Cargar caché súper rápido desde el iPhone
+
       const urlParams = new URLSearchParams(window.location.search);
       alumnoActualId = urlParams.get('id');
 
-      // Intentar cargar datos en segundo plano
-      cargarBaseDatos();
-
       if (alumnoActualId) {
+        // Muestra datos inmediatos del caché mientras consulta Sheets
         if (sessionStorage.getItem('profe_session') === 'true') {
           cargarModoProfesor(alumnoActualId);
         } else {
@@ -297,6 +302,9 @@
       } else {
         mostrarSeccion('pantalla-inicio');
       }
+
+      // 2. Consultar cambios frescos en segundo plano
+      cargarBaseDatos();
     };
 
     function mostrarSeccion(idSeccion) {
@@ -335,12 +343,19 @@
     }
 
     function actualizarPantallas(id) {
-      const alumno = baseDatos[id] || { nombre: `Alumno (${id})`, decimas: 0, historial: [] };
+      // Buscar alumno
+      const alumno = baseDatos[id] || { 
+        nombre: `Buscando alumno (${id})...`, 
+        decimas: 0, 
+        historial: [] 
+      };
+
+      // Si no existe el nombre formateado pero sí la propiedad
+      const nombreMostrar = alumno.nombre || `Alumno ${id}`;
       
-      // Actualizar valores en DOM
-      document.getElementById('estudiante-nombre').innerText = alumno.nombre;
+      document.getElementById('estudiante-nombre').innerText = nombreMostrar;
       document.getElementById('estudiante-total-decimas').innerText = alumno.decimas;
-      document.getElementById('profe-nombre-alumno').innerText = alumno.nombre;
+      document.getElementById('profe-nombre-alumno').innerText = nombreMostrar;
       document.getElementById('profe-total-decimas').innerText = alumno.decimas;
 
       const historialContainer = document.getElementById('estudiante-historial');
@@ -375,11 +390,11 @@
 
       const motivo = document.getElementById(selectId).value;
 
-      // 1. Actualización optimista e inmediata de la UI local (0 retraso)
       if (!baseDatos[alumnoActualId]) {
         baseDatos[alumnoActualId] = { nombre: `Alumno (${alumnoActualId})`, decimas: 0, historial: [] };
       }
 
+      // Actualizar UI y Caché de inmediato
       baseDatos[alumnoActualId].decimas += cantidad;
       const ahora = new Date();
       const fecha = `${ahora.getDate()}/${ahora.getMonth()+1} ${ahora.getHours()}:${String(ahora.getMinutes()).padStart(2, '0')}`;
@@ -390,10 +405,11 @@
         fecha: fecha
       });
 
+      guardarCacheLocal();
       actualizarPantallas(alumnoActualId);
       mostrarToast(`${cantidad > 0 ? '+' : ''}${cantidad} décima(s) guardadas`);
 
-      // 2. Envío en segundo plano a Google Sheets sin bloquear la pantalla
+      // Enviar a Google Sheets
       try {
         fetch(API_URL, {
           method: 'POST',
@@ -405,7 +421,7 @@
           })
         });
       } catch (err) {
-        console.error("Error al sincronizar en segundo plano:", err);
+        console.error("Error al guardar:", err);
       }
     }
   </script>
