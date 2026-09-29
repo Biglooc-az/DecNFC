@@ -3,7 +3,13 @@
     "nombre": "Joaquín",
     "apellido": "Tabilo",
     "curso": "11th grade A",
-    "decimas": 0,
-    "historial": []
+    "decimas": 2,
+    "historial": [
+      {
+        "cantidad": 2,
+        "motivo": "Trabajo en clase",
+        "fecha": "29/9 12:55"
+      }
+    ]
   }
 }
