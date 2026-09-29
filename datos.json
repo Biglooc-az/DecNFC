@@ -1,12 +1,7 @@
 {
-  "EST_001": {
-    "nombre": "Diego Azabache",
-    "decimas": 0,
-    "historial": []
-  },
-  
   "EST_002": {
     "nombre": "Lorena Muñoz",
+    "curso": "10th"
     "decimas": 0,
     "historial": []
   }
