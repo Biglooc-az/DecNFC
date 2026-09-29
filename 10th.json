@@ -3,7 +3,7 @@
     "nombre": "Lorena",
     "apellido": "Muñoz",
     "curso": "10th grade",
-    "decimas": 1,
+    "decimas": 4,
     "historial": [
       {
         "cantidad": 3,
@@ -14,6 +14,11 @@
         "cantidad": -2,
         "motivo": "Mal comportamiento",
         "fecha": "28/9 23:39"
+      },
+      {
+        "cantidad": 3,
+        "motivo": "Guia Completa",
+        "fecha": "29/9 9:48"
       }
     ]
   }
