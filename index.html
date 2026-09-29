@@ -93,17 +93,8 @@
       opacity: 1;
     }
 
-    .nfc-icon {
-      font-size: 3rem;
-      margin: 10px 0;
-    }
-
-    .decimas-badge {
-      font-size: 3rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin: 10px 0;
-    }
+    .nfc-icon { font-size: 3rem; margin: 10px 0; }
+    .decimas-badge { font-size: 3rem; font-weight: 800; color: var(--primary); margin: 10px 0; }
 
     .history-list {
       text-align: left;
@@ -126,12 +117,7 @@
 
     .history-item:last-child { border-bottom: none; }
 
-    .btn-group {
-      display: flex;
-      gap: 8px;
-      margin: 8px 0;
-    }
-
+    .btn-group { display: flex; gap: 8px; margin: 8px 0; }
     .btn-group .btn { margin: 0; }
 
     .block-title {
@@ -178,7 +164,7 @@
 
     <!-- 2. PANTALLA CONSULTA ESTUDIANTE -->
     <div id="pantalla-consulta" class="section">
-      <h3 id="estudiante-nombre">Cargando...</h3>
+      <h3 id="estudiante-nombre">Cargando datos...</h3>
       <div>Saldo Total:</div>
       <div class="decimas-badge" id="estudiante-total-decimas">0</div>
       
@@ -208,7 +194,7 @@
 
     <!-- 5. PANTALLA PROFESOR - GESTIONAR ALUMNO -->
     <div id="pantalla-gestion-profesor" class="section">
-      <h3 id="profe-nombre-alumno">Cargando...</h3>
+      <h3 id="profe-nombre-alumno">Cargando datos...</h3>
       <div>Décimas Actuales:</div>
       <div class="decimas-badge" id="profe-total-decimas">0</div>
 
@@ -246,24 +232,17 @@
   </div>
 
   <script>
-    // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT
-    const API_URL = "TU_URL_DE_APPS_SCRIPT_AQUI";
+    // CONFIGURACIÓN DE TU REPOSITORIO DE GITHUB
+    const GH_USER = "Biglooc-az";      // Ej: diegoazabache
+    const GH_REPO = "DecNFC";   // Ej: jaaa-decimas
+    const GH_TOKEN = "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"; // Ej: ghp_xxxxxxxxxxxxxxx
     const PIN_CORRECTO = "1976";
+
+    const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/datos.json`;
 
     let baseDatos = {};
     let alumnoActualId = null;
-
-    // Cargar caché local para respuesta inmediata
-    function cargarCacheLocal() {
-      const cache = localStorage.getItem('cache_alumnos');
-      if (cache) {
-        try { baseDatos = JSON.parse(cache); } catch(e){}
-      }
-    }
-
-    function guardarCacheLocal() {
-      localStorage.setItem('cache_alumnos', JSON.stringify(baseDatos));
-    }
+    let fileSha = ""; // Necesario para actualizar archivos en GitHub API
 
     function mostrarToast(mensaje, esError = false) {
       const toast = document.getElementById('toast-banner');
@@ -275,36 +254,42 @@
 
     async function cargarBaseDatos() {
       try {
-        const res = await fetch(API_URL);
+        const res = await fetch(API_URL, {
+          headers: { 'Authorization': `token ${GH_TOKEN}` }
+        });
         if (res.ok) {
-          baseDatos = await res.json();
-          guardarCacheLocal();
-          if (alumnoActualId) actualizarPantallas(alumnoActualId);
+          const data = await res.json();
+          fileSha = data.sha;
+          // Decodificar Base64 de la respuesta de GitHub API
+          const decodedContent = decodeURIComponent(escape(atob(data.content)));
+          baseDatos = JSON.parse(decodedContent);
+          
+          if (alumnoActualId) {
+            actualizarPantallas(alumnoActualId);
+          }
+        } else {
+          mostrarToast("Error al cargar datos desde GitHub", true);
         }
       } catch (err) {
-        console.error("Error al sincronizar datos:", err);
+        console.error("Error al consultar GitHub API:", err);
       }
     }
 
-    window.onload = function() {
-      cargarCacheLocal(); // 1. Cargar caché súper rápido desde el iPhone
-
+    window.onload = async function() {
       const urlParams = new URLSearchParams(window.location.search);
       alumnoActualId = urlParams.get('id');
 
       if (alumnoActualId) {
-        // Muestra datos inmediatos del caché mientras consulta Sheets
         if (sessionStorage.getItem('profe_session') === 'true') {
-          cargarModoProfesor(alumnoActualId);
+          mostrarSeccion('pantalla-gestion-profesor');
         } else {
-          cargarModoEstudiante(alumnoActualId);
+          mostrarSeccion('pantalla-consulta');
         }
+        await cargarBaseDatos();
       } else {
         mostrarSeccion('pantalla-inicio');
+        cargarBaseDatos();
       }
-
-      // 2. Consultar cambios frescos en segundo plano
-      cargarBaseDatos();
     };
 
     function mostrarSeccion(idSeccion) {
@@ -343,19 +328,21 @@
     }
 
     function actualizarPantallas(id) {
-      // Buscar alumno
-      const alumno = baseDatos[id] || { 
-        nombre: `Buscando alumno (${id})...`, 
-        decimas: 0, 
-        historial: [] 
-      };
+      const idLimpio = String(id).trim();
+      const alumno = baseDatos[idLimpio];
 
-      // Si no existe el nombre formateado pero sí la propiedad
-      const nombreMostrar = alumno.nombre || `Alumno ${id}`;
-      
-      document.getElementById('estudiante-nombre').innerText = nombreMostrar;
+      if (!alumno) {
+        const msgError = `ID ("${idLimpio}") no encontrada en datos.json`;
+        document.getElementById('estudiante-nombre').innerText = msgError;
+        document.getElementById('profe-nombre-alumno').innerText = msgError;
+        document.getElementById('estudiante-total-decimas').innerText = "0";
+        document.getElementById('profe-total-decimas').innerText = "0";
+        return;
+      }
+
+      document.getElementById('estudiante-nombre').innerText = alumno.nombre;
       document.getElementById('estudiante-total-decimas').innerText = alumno.decimas;
-      document.getElementById('profe-nombre-alumno').innerText = nombreMostrar;
+      document.getElementById('profe-nombre-alumno').innerText = alumno.nombre;
       document.getElementById('profe-total-decimas').innerText = alumno.decimas;
 
       const historialContainer = document.getElementById('estudiante-historial');
@@ -388,40 +375,59 @@
     async function modificarDecimas(cantidad, selectId) {
       if (!alumnoActualId) return;
 
+      const idLimpio = String(alumnoActualId).trim();
       const motivo = document.getElementById(selectId).value;
 
-      if (!baseDatos[alumnoActualId]) {
-        baseDatos[alumnoActualId] = { nombre: `Alumno (${alumnoActualId})`, decimas: 0, historial: [] };
+      if (!baseDatos[idLimpio]) {
+        mostrarToast("No se puede modificar: ID no registrada en datos.json", true);
+        return;
       }
 
-      // Actualizar UI y Caché de inmediato
-      baseDatos[alumnoActualId].decimas += cantidad;
+      // 1. Actualización instantánea en la interfaz local
+      baseDatos[idLimpio].decimas += cantidad;
       const ahora = new Date();
       const fecha = `${ahora.getDate()}/${ahora.getMonth()+1} ${ahora.getHours()}:${String(ahora.getMinutes()).padStart(2, '0')}`;
       
-      baseDatos[alumnoActualId].historial.push({
+      if (!baseDatos[idLimpio].historial) baseDatos[idLimpio].historial = [];
+      baseDatos[idLimpio].historial.push({
         cantidad: cantidad,
         motivo: motivo,
         fecha: fecha
       });
 
-      guardarCacheLocal();
-      actualizarPantallas(alumnoActualId);
+      actualizarPantallas(idLimpio);
       mostrarToast(`${cantidad > 0 ? '+' : ''}${cantidad} décima(s) guardadas`);
 
-      // Enviar a Google Sheets
+      // 2. Guardar automáticamente en GitHub mediante la API
       try {
-        fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        const jsonString = JSON.stringify(baseDatos, null, 2);
+        // Convertir string JSON a UTF-8 Base64
+        const utf8Bytes = new TextEncoder().encode(jsonString);
+        let binaryString = "";
+        utf8Bytes.forEach(b => binaryString += String.fromCharCode(b));
+        const contentBase64 = btoa(binaryString);
+
+        const res = await fetch(API_URL, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${GH_TOKEN}`,
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({
-            id_alu: alumnoActualId,
-            cant: cantidad,
-            motivo: motivo
+            message: `Actualización décimas alumno ${idLimpio}`,
+            content: contentBase64,
+            sha: fileSha
           })
         });
+
+        if (res.ok) {
+          const resData = await res.json();
+          fileSha = resData.content.sha; // Actualizar el SHA del commit
+        } else {
+          console.error("Error al actualizar archivo en GitHub API");
+        }
       } catch (err) {
-        console.error("Error al guardar:", err);
+        console.error("Error en la conexión con GitHub:", err);
       }
     }
   </script>
