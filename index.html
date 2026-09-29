@@ -232,17 +232,29 @@
   </div>
 
   <script>
-    // CONFIGURACIÓN DE TU REPOSITORIO DE GITHUB
-    const GH_USER = "Biglooc-az";      // Ej: diegoazabache
-    const GH_REPO = "DecNFC";   // Ej: jaaa-decimas
-    const GH_TOKEN = "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"; // Ej: ghp_xxxxxxxxxxxxxxx
+    const GH_USER = "diegoazabache";   // Tu usuario de GitHub
+    const GH_REPO = "jaaa-decimas";    // Nombre de tu repositorio
     const PIN_CORRECTO = "1976";
 
+    // URL para lectura pública desde GitHub Pages
+    const RAW_URL = `https://${GH_USER}.github.io/${GH_REPO}/datos.json?t=${Date.now()}`;
+    // URL API para escritura del profesor
     const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/datos.json`;
 
     let baseDatos = {};
     let alumnoActualId = null;
-    let fileSha = ""; // Necesario para actualizar archivos en GitHub API
+    let fileSha = "";
+
+    function obtenerToken() {
+      let token = localStorage.getItem('gh_token');
+      if (!token) {
+        token = prompt("Ingresa tu Personal Access Token de GitHub (solo para profesor):");
+        if (token) {
+          localStorage.setItem('gh_token', token.trim());
+        }
+      }
+      return token;
+    }
 
     function mostrarToast(mensaje, esError = false) {
       const toast = document.getElementById('toast-banner');
@@ -254,25 +266,33 @@
 
     async function cargarBaseDatos() {
       try {
-        const res = await fetch(API_URL, {
-          headers: { 'Authorization': `token ${GH_TOKEN}` }
-        });
+        // Lectura pública sin requerir token
+        const res = await fetch(RAW_URL);
         if (res.ok) {
-          const data = await res.json();
-          fileSha = data.sha;
-          // Decodificar Base64 de la respuesta de GitHub API
-          const decodedContent = decodeURIComponent(escape(atob(data.content)));
-          baseDatos = JSON.parse(decodedContent);
-          
+          baseDatos = await res.json();
           if (alumnoActualId) {
             actualizarPantallas(alumnoActualId);
           }
         } else {
-          mostrarToast("Error al cargar datos desde GitHub", true);
+          mostrarToast("Crea el archivo datos.json en GitHub", true);
         }
       } catch (err) {
-        console.error("Error al consultar GitHub API:", err);
+        console.error("Error al cargar datos:", err);
       }
+    }
+
+    async function obtenerSha() {
+      try {
+        const token = obtenerToken();
+        if (!token) return;
+        const res = await fetch(API_URL, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          fileSha = data.sha;
+        }
+      } catch (e) {}
     }
 
     window.onload = async function() {
@@ -282,6 +302,7 @@
       if (alumnoActualId) {
         if (sessionStorage.getItem('profe_session') === 'true') {
           mostrarSeccion('pantalla-gestion-profesor');
+          await obtenerSha();
         } else {
           mostrarSeccion('pantalla-consulta');
         }
@@ -311,6 +332,7 @@
       if (pinIngresado === PIN_CORRECTO) {
         sessionStorage.setItem('profe_session', 'true');
         document.getElementById('pinInput').value = '';
+        obtenerSha();
         if (alumnoActualId) {
           cargarModoProfesor(alumnoActualId);
         } else {
@@ -332,7 +354,7 @@
       const alumno = baseDatos[idLimpio];
 
       if (!alumno) {
-        const msgError = `ID ("${idLimpio}") no encontrada en datos.json`;
+        const msgError = `ID ("${idLimpio}") no encontrada`;
         document.getElementById('estudiante-nombre').innerText = msgError;
         document.getElementById('profe-nombre-alumno').innerText = msgError;
         document.getElementById('estudiante-total-decimas').innerText = "0";
@@ -375,15 +397,20 @@
     async function modificarDecimas(cantidad, selectId) {
       if (!alumnoActualId) return;
 
+      const token = obtenerToken();
+      if (!token) {
+        mostrarToast("Se requiere token para modificar", true);
+        return;
+      }
+
       const idLimpio = String(alumnoActualId).trim();
       const motivo = document.getElementById(selectId).value;
 
       if (!baseDatos[idLimpio]) {
-        mostrarToast("No se puede modificar: ID no registrada en datos.json", true);
+        mostrarToast("ID no encontrada en datos.json", true);
         return;
       }
 
-      // 1. Actualización instantánea en la interfaz local
       baseDatos[idLimpio].decimas += cantidad;
       const ahora = new Date();
       const fecha = `${ahora.getDate()}/${ahora.getMonth()+1} ${ahora.getHours()}:${String(ahora.getMinutes()).padStart(2, '0')}`;
@@ -398,10 +425,10 @@
       actualizarPantallas(idLimpio);
       mostrarToast(`${cantidad > 0 ? '+' : ''}${cantidad} décima(s) guardadas`);
 
-      // 2. Guardar automáticamente en GitHub mediante la API
       try {
+        await obtenerSha();
+
         const jsonString = JSON.stringify(baseDatos, null, 2);
-        // Convertir string JSON a UTF-8 Base64
         const utf8Bytes = new TextEncoder().encode(jsonString);
         let binaryString = "";
         utf8Bytes.forEach(b => binaryString += String.fromCharCode(b));
@@ -410,7 +437,7 @@
         const res = await fetch(API_URL, {
           method: 'PUT',
           headers: {
-            'Authorization': `token ${GH_TOKEN}`,
+            'Authorization': `token ${token}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
@@ -422,12 +449,12 @@
 
         if (res.ok) {
           const resData = await res.json();
-          fileSha = resData.content.sha; // Actualizar el SHA del commit
+          fileSha = resData.content.sha;
         } else {
-          console.error("Error al actualizar archivo en GitHub API");
+          mostrarToast("Error al guardar en GitHub", true);
         }
       } catch (err) {
-        console.error("Error en la conexión con GitHub:", err);
+        console.error("Error en conexión GitHub:", err);
       }
     }
   </script>
