@@ -267,12 +267,16 @@
     const PIN_CORRECTO = "1976";
     const ID_PROFESOR = "EST_001"; // ID exclusiva para abrir el modo profesor con PIN
 
-    const RAW_URL = `https://${GH_USER}.github.io/${GH_REPO}/datos.json`;
-    const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/datos.json`;
+    // Mapeo de cursos a sus respectivos archivos JSON
+    const ARCHIVOS_CURSOS = {
+      "10th grade": "10th.json",
+      "11th grade A": "11thA.json",
+      "12th grade A": "12thA.json",
+      "12th grade B": "12thB.json"
+    };
 
-    let baseDatos = {};
+    let baseDatos = {}; // Consolidado de todos los alumnos en memoria
     let alumnoActualId = null;
-    let fileSha = "";
 
     function obtenerToken() {
       let token = localStorage.getItem('gh_token');
@@ -291,6 +295,7 @@
       setTimeout(() => { toast.style.display = 'none'; }, 3000);
     }
 
+    // Cargar la base de datos leyendo los 4 archivos JSON
     async function cargarBaseDatos() {
       const localCache = localStorage.getItem('local_db_decimas');
       if (localCache) {
@@ -302,40 +307,28 @@
       }
 
       try {
-        const res = await fetch(`${RAW_URL}?t=${Date.now()}`);
-        if (res.ok) {
-          baseDatos = await res.json();
+        const promesas = Object.values(ARCHIVOS_CURSOS).map(archivo =>
+          fetch(`https://${GH_USER}.github.io/${GH_REPO}/${archivo}?t=${Date.now()}`)
+            .then(res => res.ok ? res.json() : {})
+            .catch(() => ({}))
+        );
+
+        const resultados = await Promise.all(promesas);
+        let nuevaBaseDatos = {};
+
+        resultados.forEach(data => {
+          Object.assign(nuevaBaseDatos, data);
+        });
+
+        if (Object.keys(nuevaBaseDatos).length > 0) {
+          baseDatos = nuevaBaseDatos;
           localStorage.setItem('local_db_decimas', JSON.stringify(baseDatos));
           if (alumnoActualId) actualizarPantallas(alumnoActualId);
           renderizarPanelProfesor();
-          return;
         }
-      } catch (err) {}
-
-      try {
-        const resApi = await fetch(`${API_URL}?t=${Date.now()}`);
-        if (resApi.ok) {
-          const dataApi = await resApi.json();
-          fileSha = dataApi.sha;
-          const decodedContent = decodeURIComponent(escape(atob(dataApi.content.replace(/\s/g, ''))));
-          baseDatos = JSON.parse(decodedContent);
-          localStorage.setItem('local_db_decimas', JSON.stringify(baseDatos));
-          if (alumnoActualId) actualizarPantallas(alumnoActualId);
-          renderizarPanelProfesor();
-        }
-      } catch (errApi) {}
-    }
-
-    async function obtenerSha() {
-      try {
-        const token = obtenerToken();
-        if (!token) return;
-        const res = await fetch(API_URL, { headers: { 'Authorization': `token ${token}` } });
-        if (res.ok) {
-          const data = await res.json();
-          fileSha = data.sha;
-        }
-      } catch (e) {}
+      } catch (err) {
+        console.error("Error cargando archivos JSON:", err);
+      }
     }
 
     window.onload = async function() {
@@ -344,19 +337,15 @@
 
       await cargarBaseDatos();
 
-      // Si el NFC escaneado es EST_001 (Tarjeta Profesor)
       if (alumnoActualId === ID_PROFESOR) {
         if (sessionStorage.getItem('profe_session') === 'true') {
           mostrarSeccion('pantalla-panel-profesor');
-          await obtenerSha();
         } else {
           mostrarSeccion('pantalla-pin');
         }
       } else if (alumnoActualId) {
-        // Alumno normal
         if (sessionStorage.getItem('profe_session') === 'true') {
           mostrarSeccion('pantalla-gestion-profesor');
-          await obtenerSha();
         } else {
           mostrarSeccion('pantalla-consulta');
         }
@@ -384,9 +373,7 @@
       if (pinIngresado === PIN_CORRECTO) {
         sessionStorage.setItem('profe_session', 'true');
         document.getElementById('pinInput').value = '';
-        obtenerSha();
         
-        // Al ingresar como profesor desde EST_001 va al Panel General
         if (alumnoActualId === ID_PROFESOR || !alumnoActualId) {
           renderizarPanelProfesor();
           mostrarSeccion('pantalla-panel-profesor');
@@ -418,9 +405,8 @@
 
       let alumnos = [];
 
-      // Extraer y estructurar alumnos desde la baseDatos
       Object.keys(baseDatos).forEach(id => {
-        if (id === ID_PROFESOR) return; // Ocultar tarjeta del profesor
+        if (id === ID_PROFESOR) return;
 
         const alu = baseDatos[id];
         alumnos.push({
@@ -432,7 +418,7 @@
         });
       });
 
-      // 1. Filtrar por curso según la opción seleccionada
+      // 1. Filtrar por curso
       if (cursoSeleccionado !== "Todos") {
         alumnos = alumnos.filter(alu => alu.curso === cursoSeleccionado);
       }
@@ -448,7 +434,6 @@
       alumnos.forEach(alu => {
         const nombreCompleto = `${alu.nombre} ${alu.apellido}`.trim();
 
-        // Fila para Lista General
         htmlLista += `
           <div class="student-row">
             <div class="student-info">
@@ -459,7 +444,6 @@
           </div>
         `;
 
-        // Fila para Modo Ráfaga (Checkbox)
         htmlRafaga += `
           <div class="student-row">
             <label class="checkbox-row">
@@ -525,43 +509,56 @@
       mostrarSeccion('pantalla-gestion-profesor');
     }
 
-    async function guardarEnGitHub() {
+    // Guardar cambios directamente en el/los JSON de los cursos modificados
+    async function guardarEnGitHub(cursosAModificar) {
       const token = obtenerToken();
       if (!token) return;
 
       localStorage.setItem('local_db_decimas', JSON.stringify(baseDatos));
       renderizarPanelProfesor();
 
-      try {
-        await obtenerSha();
+      for (const nombreCurso of cursosAModificar) {
+        const nombreArchivo = ARCHIVOS_CURSOS[nombreCurso];
+        if (!nombreArchivo) continue;
 
-        const jsonString = JSON.stringify(baseDatos, null, 2);
-        const utf8Bytes = new TextEncoder().encode(jsonString);
-        let binaryString = "";
-        utf8Bytes.forEach(b => binaryString += String.fromCharCode(b));
-        const contentBase64 = btoa(binaryString);
-
-        const res = await fetch(API_URL, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `token ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message: `Actualización de décimas`,
-            content: contentBase64,
-            sha: fileSha
-          })
+        // Filtrar datos que pertenecen a este curso
+        const datosCurso = {};
+        Object.keys(baseDatos).forEach(id => {
+          if (baseDatos[id].curso === nombreCurso) {
+            datosCurso[id] = baseDatos[id];
+          }
         });
 
-        if (res.ok) {
-          const resData = await res.json();
-          fileSha = resData.content.sha;
-        } else {
-          mostrarToast("Error al sincronizar con GitHub", true);
+        const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${nombreArchivo}`;
+
+        try {
+          // Obtener SHA actual del archivo específico
+          const resSha = await fetch(API_URL, { headers: { 'Authorization': `token ${token}` } });
+          if (!resSha.ok) continue;
+          const dataSha = await resSha.json();
+
+          const jsonString = JSON.stringify(datosCurso, null, 2);
+          const utf8Bytes = new TextEncoder().encode(jsonString);
+          let binaryString = "";
+          utf8Bytes.forEach(b => binaryString += String.fromCharCode(b));
+          const contentBase64 = btoa(binaryString);
+
+          await fetch(API_URL, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: `Actualización de décimas (${nombreCurso})`,
+              content: contentBase64,
+              sha: dataSha.sha
+            })
+          });
+        } catch (err) {
+          console.error(`Error guardando ${nombreArchivo}:`, err);
+          mostrarToast(`Error guardando ${nombreCurso}`, true);
         }
-      } catch (err) {
-        console.error("Error en conexión GitHub:", err);
       }
     }
 
@@ -582,7 +579,9 @@
 
       actualizarPantallas(idLimpio);
       mostrarToast(`${cantidad > 0 ? '+' : ''}${cantidad} décima(s) aplicadas`);
-      await guardarEnGitHub();
+      
+      const cursoAlumno = baseDatos[idLimpio].curso;
+      await guardarEnGitHub([cursoAlumno]);
     }
 
     async function aplicarRafaga(cantidad) {
@@ -597,17 +596,23 @@
       const ahora = new Date();
       const fecha = `${ahora.getDate()}/${ahora.getMonth()+1} ${ahora.getHours()}:${String(ahora.getMinutes()).padStart(2, '0')}`;
 
+      const cursosAfectados = new Set();
+
       seleccionados.forEach(id => {
         if (baseDatos[id]) {
           baseDatos[id].decimas = (baseDatos[id].decimas || 0) + cantidad;
           if (!baseDatos[id].historial) baseDatos[id].historial = [];
           baseDatos[id].historial.push({ cantidad: cantidad, motivo: motivo, fecha: fecha });
+
+          if (baseDatos[id].curso) {
+            cursosAfectados.add(baseDatos[id].curso);
+          }
         }
       });
 
       toggleSeleccionarTodos(false);
       mostrarToast(`Ráfaga aplicada a ${seleccionados.length} estudiante(s)`);
-      await guardarEnGitHub();
+      await guardarEnGitHub(Array.from(cursosAfectados));
     }
   </script>
 </body>
