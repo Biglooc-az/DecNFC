@@ -2,64 +2,9 @@
   "EST_001": {
     "nombre": "Diego Azabache",
     "decimas": 0,
-    "historial": [
-      {
-        "cantidad": 3,
-        "motivo": "Guia Completa",
-        "fecha": "28/9 23:13"
-      },
-      {
-        "cantidad": 3,
-        "motivo": "Trabajo en clase",
-        "fecha": "28/9 23:13"
-      },
-      {
-        "cantidad": 3,
-        "motivo": "Compañerismo",
-        "fecha": "28/9 23:13"
-      },
-      {
-        "cantidad": 3,
-        "motivo": "Buena Actitud",
-        "fecha": "28/9 23:13"
-      },
-      {
-        "cantidad": -3,
-        "motivo": "Cobradas",
-        "fecha": "28/9 23:13"
-      },
-      {
-        "cantidad": -2,
-        "motivo": "Mal comportamiento",
-        "fecha": "28/9 23:13"
-      },
-      {
-        "cantidad": -1,
-        "motivo": "Otro",
-        "fecha": "28/9 23:13"
-      },
-      {
-        "cantidad": -1,
-        "motivo": "Cobradas",
-        "fecha": "28/9 23:15"
-      },
-      {
-        "cantidad": -2,
-        "motivo": "Cobradas",
-        "fecha": "28/9 23:15"
-      },
-      {
-        "cantidad": -1,
-        "motivo": "Cobradas",
-        "fecha": "28/9 23:15"
-      },
-      {
-        "cantidad": -2,
-        "motivo": "Cobradas",
-        "fecha": "28/9 23:15"
-      }
-    ]
+    "historial": []
   },
+  
   "EST_002": {
     "nombre": "Lorena Muñoz",
     "decimas": 0,
