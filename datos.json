@@ -3,7 +3,13 @@
     "nombre": "Lorena",
     "apellido": "Muñoz",
     "curso": "10th",
-    "decimas": 0,
-    "historial": []
+    "decimas": 3,
+    "historial": [
+      {
+        "cantidad": 3,
+        "motivo": "Guia Completa",
+        "fecha": "28/9 23:39"
+      }
+    ]
   }
 }
