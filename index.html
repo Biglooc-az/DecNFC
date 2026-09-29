@@ -34,118 +34,83 @@
       border-radius: 20px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.06);
       width: 100%;
-      max-width: 400px;
+      max-width: 460px;
       text-align: center;
       position: relative;
     }
 
-    h1 {
-      font-size: 1.8rem;
-      margin-top: 0;
-      margin-bottom: 20px;
-      color: var(--primary);
-    }
+    h1 { font-size: 1.8rem; margin-top: 0; margin-bottom: 20px; color: var(--primary); }
+    h3 { margin-bottom: 10px; }
 
     .btn {
-      display: block;
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      font-size: 1rem;
-      font-weight: 600;
-      color: white;
-      background-color: var(--primary);
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: transform 0.05s ease, opacity 0.15s ease;
+      display: block; width: 100%; padding: 12px; margin: 8px 0;
+      font-size: 0.95rem; font-weight: 600; color: white;
+      background-color: var(--primary); border: none; border-radius: 12px;
+      cursor: pointer; transition: transform 0.05s ease, opacity 0.15s ease;
       box-sizing: border-box;
     }
 
-    .btn:active {
-      transform: scale(0.97);
-      opacity: 0.9;
-    }
-
+    .btn:active { transform: scale(0.97); opacity: 0.9; }
     .btn-secondary { background-color: #6b7280; }
     .btn-danger { background-color: var(--error); }
+    .btn-small { padding: 6px 12px; font-size: 0.85rem; width: auto; display: inline-block; }
 
     input[type="password"], select {
-      width: 100%;
-      padding: 12px;
-      font-size: 1rem;
-      margin: 8px 0 16px 0;
-      border: 2px solid #e5e7eb;
-      border-radius: 10px;
-      box-sizing: border-box;
-      outline: none;
+      width: 100%; padding: 12px; font-size: 1rem; margin: 8px 0 16px 0;
+      border: 2px solid #e5e7eb; border-radius: 10px; box-sizing: border-box; outline: none;
       background-color: #f9fafb;
     }
 
-    .section {
-      display: none;
-      opacity: 0;
-      transition: opacity 0.15s ease-in-out;
-    }
-
-    .section.active {
-      display: block;
-      opacity: 1;
-    }
+    .section { display: none; opacity: 0; transition: opacity 0.15s ease-in-out; }
+    .section.active { display: block; opacity: 1; }
 
     .nfc-icon { font-size: 3rem; margin: 10px 0; }
     .decimas-badge { font-size: 3rem; font-weight: 800; color: var(--primary); margin: 10px 0; }
 
     .history-list {
-      text-align: left;
-      max-height: 180px;
-      overflow-y: auto;
-      border: 1px solid #f3f4f6;
-      padding: 8px 12px;
-      border-radius: 10px;
-      background: #fafafa;
+      text-align: left; max-height: 180px; overflow-y: auto;
+      border: 1px solid #f3f4f6; padding: 8px 12px; border-radius: 10px; background: #fafafa;
     }
 
     .history-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid #f3f4f6;
-      font-size: 0.9rem;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem;
     }
 
     .history-item:last-child { border-bottom: none; }
-
     .btn-group { display: flex; gap: 8px; margin: 8px 0; }
     .btn-group .btn { margin: 0; }
+    .block-title { text-align: left; font-weight: 700; margin-top: 14px; margin-bottom: 4px; color: #374151; font-size: 0.95rem; }
 
-    .block-title {
-      text-align: left;
-      font-weight: 700;
-      margin-top: 14px;
-      margin-bottom: 4px;
-      color: #374151;
-      font-size: 0.95rem;
+    /* Estilos para Lista General y Ráfaga */
+    .student-card-list {
+      text-align: left; max-height: 260px; overflow-y: auto;
+      border: 1px solid #e5e7eb; border-radius: 12px; padding: 8px; background: #fafafa; margin-bottom: 15px;
     }
+
+    .student-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 8px; border-bottom: 1px solid #edf2f7;
+    }
+    .student-row:last-child { border-bottom: none; }
+    .student-info { font-size: 0.9rem; }
+    .student-info small { color: #6b7280; display: block; }
+
+    .checkbox-row { display: flex; align-items: center; gap: 10px; cursor: pointer; width: 100%; }
+    .checkbox-row input { width: 18px; height: 18px; accent-color: var(--primary); }
+
+    .tab-group { display: flex; gap: 6px; margin-bottom: 15px; }
+    .tab-btn { flex: 1; padding: 8px; border: 1px solid #d1d5db; background: #f3f4f6; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
     .toast {
-      display: none;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      animation: fadeIn 0.2s ease-in-out;
+      display: none; padding: 12px; border-radius: 10px; margin-bottom: 15px;
+      font-weight: 600; font-size: 0.9rem; animation: fadeIn 0.2s ease-in-out;
     }
-
     .toast-success { background-color: #d1fae5; color: #065f46; }
     .toast-error { background-color: #fee2e2; color: #991b1b; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -165,6 +130,7 @@
     <!-- 2. PANTALLA CONSULTA ESTUDIANTE -->
     <div id="pantalla-consulta" class="section">
       <h3 id="estudiante-nombre">Cargando datos...</h3>
+      <div id="estudiante-curso" style="color:#6b7280; font-size:0.9rem;">-</div>
       <div>Saldo Total:</div>
       <div class="decimas-badge" id="estudiante-total-decimas">0</div>
       
@@ -184,17 +150,52 @@
       <button class="btn btn-secondary" onclick="volverConsultaOInicio()">Volver</button>
     </div>
 
-    <!-- 4. PANTALLA PROFESOR - ESPERANDO TARJETA -->
-    <div id="pantalla-espera-profesor" class="section">
-      <h3>Modo Gestión Profesor</h3>
-      <div class="nfc-icon">📲</div>
-      <p><strong>Por favor, acerca la tarjeta (chip NFC) del estudiante.</strong></p>
-      <button class="btn btn-secondary" onclick="cerrarSesionProfe()">Cerrar Sesión</button>
+    <!-- 4. PANEL GENERAL PROFESOR (VER TODOS & MODO RÁFAGA) -->
+    <div id="pantalla-panel-profesor" class="section">
+      <h3>Panel General Docente</h3>
+      
+      <div class="tab-group">
+        <button class="tab-btn active" id="tab-lista-btn" onclick="cambiarTab('lista')">Ver Todos</button>
+        <button class="tab-btn" id="tab-rafaga-btn" onclick="cambiarTab('rafaga')">Modo Ráfaga ⚡</button>
+      </div>
+
+      <!-- SUB-PESTAÑA 1: LISTA COMPLETA DE ALUMNOS -->
+      <div id="tab-lista">
+        <div class="student-card-list" id="contenedor-lista-alumnos">Cargando alumnos...</div>
+      </div>
+
+      <!-- SUB-PESTAÑA 2: MODO RÁFAGA (ASIGNACIÓN MASIVA) -->
+      <div id="tab-rafaga" style="display:none;">
+        <div class="block-title">1. Seleccionar Operación:</div>
+        <select id="rafagaMotivoSelect">
+          <option value="Guia Completa">Guía Completa (+1)</option>
+          <option value="Trabajo en clase">Trabajo en clase (+1)</option>
+          <option value="Compañerismo">Compañerismo (+1)</option>
+          <option value="Buena Actitud">Buena Actitud (+1)</option>
+          <option value="Cobradas">Cobradas (-1)</option>
+          <option value="Mal comportamiento">Mal comportamiento (-1)</option>
+        </select>
+
+        <div class="btn-group">
+          <button class="btn" onclick="aplicarRafaga(1)">+1 a seleccionados</button>
+          <button class="btn btn-danger" onclick="aplicarRafaga(-1)">-1 a seleccionados</button>
+        </div>
+
+        <div class="block-title">2. Seleccionar Estudiantes:</div>
+        <div style="text-align:left; margin-bottom:6px;">
+          <button class="btn-small btn-secondary" onclick="toggleSeleccionarTodos(true)">Marcar Todos</button>
+          <button class="btn-small btn-secondary" onclick="toggleSeleccionarTodos(false)">Desmarcar</button>
+        </div>
+        <div class="student-card-list" id="contenedor-rafaga-alumnos">Cargando alumnos...</div>
+      </div>
+
+      <button class="btn btn-secondary" style="margin-top: 15px;" onclick="cerrarSesionProfe()">Cerrar Sesión</button>
     </div>
 
-    <!-- 5. PANTALLA PROFESOR - GESTIONAR ALUMNO -->
+    <!-- 5. PANTALLA PROFESOR - GESTIONAR ALUMNO INDIVIDUAL -->
     <div id="pantalla-gestion-profesor" class="section">
       <h3 id="profe-nombre-alumno">Cargando datos...</h3>
+      <div id="profe-curso-alumno" style="color:#6b7280; font-size:0.9rem;">-</div>
       <div>Décimas Actuales:</div>
       <div class="decimas-badge" id="profe-total-decimas">0</div>
 
@@ -206,9 +207,9 @@
         <option value="Buena Actitud">Buena Actitud</option>
       </select>
       <div class="btn-group">
-        <button class="btn" onclick="modificarDecimas(1, 'motivoAgregarSelect')">+1</button>
-        <button class="btn" onclick="modificarDecimas(2, 'motivoAgregarSelect')">+2</button>
-        <button class="btn" onclick="modificarDecimas(3, 'motivoAgregarSelect')">+3</button>
+        <button class="btn" onclick="modificarDecimasIndividual(1, 'motivoAgregarSelect')">+1</button>
+        <button class="btn" onclick="modificarDecimasIndividual(2, 'motivoAgregarSelect')">+2</button>
+        <button class="btn" onclick="modificarDecimasIndividual(3, 'motivoAgregarSelect')">+3</button>
       </div>
 
       <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 15px 0;">
@@ -220,12 +221,12 @@
         <option value="Otro">Otro</option>
       </select>
       <div class="btn-group">
-        <button class="btn btn-danger" onclick="modificarDecimas(-1, 'motivoQuitarSelect')">-1</button>
-        <button class="btn btn-danger" onclick="modificarDecimas(-2, 'motivoQuitarSelect')">-2</button>
-        <button class="btn btn-danger" onclick="modificarDecimas(-3, 'motivoQuitarSelect')">-3</button>
+        <button class="btn btn-danger" onclick="modificarDecimasIndividual(-1, 'motivoQuitarSelect')">-1</button>
+        <button class="btn btn-danger" onclick="modificarDecimasIndividual(-2, 'motivoQuitarSelect')">-2</button>
+        <button class="btn btn-danger" onclick="modificarDecimasIndividual(-3, 'motivoQuitarSelect')">-3</button>
       </div>
 
-      <button class="btn btn-secondary" style="margin-top: 20px;" onclick="mostrarSeccion('pantalla-espera-profesor')">Escanear otro alumno</button>
+      <button class="btn btn-secondary" style="margin-top: 20px;" onclick="mostrarSeccion('pantalla-panel-profesor')">Volver al Panel General</button>
       <button class="btn btn-secondary" onclick="cerrarSesionProfe()">Cerrar Sesión</button>
     </div>
 
@@ -235,6 +236,7 @@
     const GH_USER = "biglooc-az";
     const GH_REPO = "DecNFC";
     const PIN_CORRECTO = "1976";
+    const ID_PROFESOR = "EST_001"; // ID exclusiva para abrir el modo profesor con PIN
 
     const RAW_URL = `https://${GH_USER}.github.io/${GH_REPO}/datos.json`;
     const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/datos.json`;
@@ -246,10 +248,8 @@
     function obtenerToken() {
       let token = localStorage.getItem('gh_token');
       if (!token) {
-        token = prompt("Ingresa tu Personal Access Token de GitHub (Se guardará automáticamente en este navegador):");
-        if (token) {
-          localStorage.setItem('gh_token', token.trim());
-        }
+        token = prompt("Ingresa tu Personal Access Token de GitHub:");
+        if (token) localStorage.setItem('gh_token', token.trim());
       }
       return token;
     }
@@ -268,6 +268,7 @@
         try {
           baseDatos = JSON.parse(localCache);
           if (alumnoActualId) actualizarPantallas(alumnoActualId);
+          renderizarPanelProfesor();
         } catch (e) {}
       }
 
@@ -277,6 +278,7 @@
           baseDatos = await res.json();
           localStorage.setItem('local_db_decimas', JSON.stringify(baseDatos));
           if (alumnoActualId) actualizarPantallas(alumnoActualId);
+          renderizarPanelProfesor();
           return;
         }
       } catch (err) {}
@@ -290,6 +292,7 @@
           baseDatos = JSON.parse(decodedContent);
           localStorage.setItem('local_db_decimas', JSON.stringify(baseDatos));
           if (alumnoActualId) actualizarPantallas(alumnoActualId);
+          renderizarPanelProfesor();
         }
       } catch (errApi) {}
     }
@@ -298,9 +301,7 @@
       try {
         const token = obtenerToken();
         if (!token) return;
-        const res = await fetch(API_URL, {
-          headers: { 'Authorization': `token ${token}` }
-        });
+        const res = await fetch(API_URL, { headers: { 'Authorization': `token ${token}` } });
         if (res.ok) {
           const data = await res.json();
           fileSha = data.sha;
@@ -312,17 +313,26 @@
       const urlParams = new URLSearchParams(window.location.search);
       alumnoActualId = urlParams.get('id');
 
-      if (alumnoActualId) {
+      await cargarBaseDatos();
+
+      // Si el NFC escaneado es EST_001 (Tarjeta Profesor)
+      if (alumnoActualId === ID_PROFESOR) {
+        if (sessionStorage.getItem('profe_session') === 'true') {
+          mostrarSeccion('pantalla-panel-profesor');
+          await obtenerSha();
+        } else {
+          mostrarSeccion('pantalla-pin');
+        }
+      } else if (alumnoActualId) {
+        // Alumno normal
         if (sessionStorage.getItem('profe_session') === 'true') {
           mostrarSeccion('pantalla-gestion-profesor');
           await obtenerSha();
         } else {
           mostrarSeccion('pantalla-consulta');
         }
-        await cargarBaseDatos();
       } else {
         mostrarSeccion('pantalla-inicio');
-        cargarBaseDatos();
       }
     };
 
@@ -333,7 +343,7 @@
 
     function volverConsultaOInicio() {
       document.getElementById('pinInput').value = '';
-      if (alumnoActualId) {
+      if (alumnoActualId && alumnoActualId !== ID_PROFESOR) {
         mostrarSeccion('pantalla-consulta');
       } else {
         mostrarSeccion('pantalla-inicio');
@@ -346,10 +356,13 @@
         sessionStorage.setItem('profe_session', 'true');
         document.getElementById('pinInput').value = '';
         obtenerSha();
-        if (alumnoActualId) {
-          cargarModoProfesor(alumnoActualId);
+        
+        // Al ingresar como profesor desde EST_001 va al Panel General
+        if (alumnoActualId === ID_PROFESOR || !alumnoActualId) {
+          renderizarPanelProfesor();
+          mostrarSeccion('pantalla-panel-profesor');
         } else {
-          mostrarSeccion('pantalla-espera-profesor');
+          cargarModoProfesor(alumnoActualId);
         }
       } else {
         mostrarToast("PIN incorrecto", true);
@@ -362,23 +375,81 @@
       volverConsultaOInicio();
     }
 
+    function cambiarTab(tab) {
+      document.getElementById('tab-lista').style.display = tab === 'lista' ? 'block' : 'none';
+      document.getElementById('tab-rafaga').style.display = tab === 'rafaga' ? 'block' : 'none';
+      document.getElementById('tab-lista-btn').className = `tab-btn ${tab === 'lista' ? 'active' : ''}`;
+      document.getElementById('tab-rafaga-btn').className = `tab-btn ${tab === 'rafaga' ? 'active' : ''}`;
+    }
+
+    function renderizarPanelProfesor() {
+      const contenedorLista = document.getElementById('contenedor-lista-alumnos');
+      const contenedorRafaga = document.getElementById('contenedor-rafaga-alumnos');
+
+      let htmlLista = '';
+      let htmlRafaga = '';
+
+      Object.keys(baseDatos).forEach(id => {
+        if (id === ID_PROFESOR) return; // Ocultar tarjeta de profesor de la lista
+
+        const alu = baseDatos[id];
+        const nombreCompleto = `${alu.nombre || ''} ${alu.apellido || ''}`.trim();
+        const curso = alu.curso || 'Sin curso';
+
+        // Fila para Lista General
+        htmlLista += `
+          <div class="student-row">
+            <div class="student-info">
+              <b>${nombreCompleto}</b>
+              <small>${curso} - Décimas: <b>${alu.decimas || 0}</b></small>
+            </div>
+            <button class="btn-small btn" onclick="seleccionarAlumnoIndividual('${id}')">Gestionar</button>
+          </div>
+        `;
+
+        // Fila para Modo Ráfaga (Checkbox)
+        htmlRafaga += `
+          <div class="student-row">
+            <label class="checkbox-row">
+              <input type="checkbox" class="chk-rafaga" value="${id}">
+              <div class="student-info">
+                <b>${nombreCompleto}</b>
+                <small>${curso} (Saldo: ${alu.decimas || 0})</small>
+              </div>
+            </label>
+          </div>
+        `;
+      });
+
+      contenedorLista.innerHTML = htmlLista || '<p style="color:#888;">No hay alumnos registrados</p>';
+      contenedorRafaga.innerHTML = htmlRafaga || '<p style="color:#888;">No hay alumnos registrados</p>';
+    }
+
+    function seleccionarAlumnoIndividual(id) {
+      alumnoActualId = id;
+      cargarModoProfesor(id);
+    }
+
+    function toggleSeleccionarTodos(estado) {
+      document.querySelectorAll('.chk-rafaga').forEach(chk => chk.checked = estado);
+    }
+
     function actualizarPantallas(id) {
       const idLimpio = String(id).trim();
       const alumno = baseDatos[idLimpio];
 
-      if (!alumno) {
-        const msgError = `ID ("${idLimpio}") no encontrada en datos.json`;
-        document.getElementById('estudiante-nombre').innerText = msgError;
-        document.getElementById('profe-nombre-alumno').innerText = msgError;
-        document.getElementById('estudiante-total-decimas').innerText = "0";
-        document.getElementById('profe-total-decimas').innerText = "0";
-        return;
-      }
+      if (!alumno) return;
 
-      document.getElementById('estudiante-nombre').innerText = alumno.nombre;
-      document.getElementById('estudiante-total-decimas').innerText = alumno.decimas;
-      document.getElementById('profe-nombre-alumno').innerText = alumno.nombre;
-      document.getElementById('profe-total-decimas').innerText = alumno.decimas;
+      const nombreCompleto = `${alumno.nombre || ''} ${alumno.apellido || ''}`.trim();
+      const curso = alumno.curso || 'Sin curso';
+
+      document.getElementById('estudiante-nombre').innerText = nombreCompleto;
+      document.getElementById('estudiante-curso').innerText = `Curso: ${curso}`;
+      document.getElementById('estudiante-total-decimas').innerText = alumno.decimas || 0;
+
+      document.getElementById('profe-nombre-alumno').innerText = nombreCompleto;
+      document.getElementById('profe-curso-alumno').innerText = `Curso: ${curso}`;
+      document.getElementById('profe-total-decimas').innerText = alumno.decimas || 0;
 
       const historialContainer = document.getElementById('estudiante-historial');
       historialContainer.innerHTML = '';
@@ -397,47 +468,17 @@
       }
     }
 
-    function cargarModoEstudiante(id) {
-      actualizarPantallas(id);
-      mostrarSeccion('pantalla-consulta');
-    }
-
     function cargarModoProfesor(id) {
       actualizarPantallas(id);
       mostrarSeccion('pantalla-gestion-profesor');
     }
 
-    async function modificarDecimas(cantidad, selectId) {
-      if (!alumnoActualId) return;
-
+    async function guardarEnGitHub() {
       const token = obtenerToken();
-      if (!token) {
-        mostrarToast("Se requiere token para modificar", true);
-        return;
-      }
-
-      const idLimpio = String(alumnoActualId).trim();
-      const motivo = document.getElementById(selectId).value;
-
-      if (!baseDatos[idLimpio]) {
-        mostrarToast("ID no encontrada en datos.json", true);
-        return;
-      }
-
-      baseDatos[idLimpio].decimas += cantidad;
-      const ahora = new Date();
-      const fecha = `${ahora.getDate()}/${ahora.getMonth()+1} ${ahora.getHours()}:${String(ahora.getMinutes()).padStart(2, '0')}`;
-      
-      if (!baseDatos[idLimpio].historial) baseDatos[idLimpio].historial = [];
-      baseDatos[idLimpio].historial.push({
-        cantidad: cantidad,
-        motivo: motivo,
-        fecha: fecha
-      });
+      if (!token) return;
 
       localStorage.setItem('local_db_decimas', JSON.stringify(baseDatos));
-      actualizarPantallas(idLimpio);
-      mostrarToast(`${cantidad > 0 ? '+' : ''}${cantidad} décima(s) guardadas`);
+      renderizarPanelProfesor();
 
       try {
         await obtenerSha();
@@ -455,7 +496,7 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            message: `Actualización décimas alumno ${idLimpio}`,
+            message: `Actualización de décimas`,
             content: contentBase64,
             sha: fileSha
           })
@@ -465,11 +506,56 @@
           const resData = await res.json();
           fileSha = resData.content.sha;
         } else {
-          mostrarToast("Error al guardar en GitHub", true);
+          mostrarToast("Error al sincronizar con GitHub", true);
         }
       } catch (err) {
         console.error("Error en conexión GitHub:", err);
       }
+    }
+
+    async function modificarDecimasIndividual(cantidad, selectId) {
+      if (!alumnoActualId) return;
+
+      const idLimpio = String(alumnoActualId).trim();
+      const motivo = document.getElementById(selectId).value;
+
+      if (!baseDatos[idLimpio]) return;
+
+      baseDatos[idLimpio].decimas = (baseDatos[idLimpio].decimas || 0) + cantidad;
+      const ahora = new Date();
+      const fecha = `${ahora.getDate()}/${ahora.getMonth()+1} ${ahora.getHours()}:${String(ahora.getMinutes()).padStart(2, '0')}`;
+      
+      if (!baseDatos[idLimpio].historial) baseDatos[idLimpio].historial = [];
+      baseDatos[idLimpio].historial.push({ cantidad: cantidad, motivo: motivo, fecha: fecha });
+
+      actualizarPantallas(idLimpio);
+      mostrarToast(`${cantidad > 0 ? '+' : ''}${cantidad} décima(s) aplicadas`);
+      await guardarEnGitHub();
+    }
+
+    async function aplicarRafaga(cantidad) {
+      const seleccionados = Array.from(document.querySelectorAll('.chk-rafaga:checked')).map(c => c.value);
+      
+      if (seleccionados.length === 0) {
+        mostrarToast("Selecciona al menos un alumno", true);
+        return;
+      }
+
+      const motivo = document.getElementById('rafagaMotivoSelect').value;
+      const ahora = new Date();
+      const fecha = `${ahora.getDate()}/${ahora.getMonth()+1} ${ahora.getHours()}:${String(ahora.getMinutes()).padStart(2, '0')}`;
+
+      seleccionados.forEach(id => {
+        if (baseDatos[id]) {
+          baseDatos[id].decimas = (baseDatos[id].decimas || 0) + cantidad;
+          if (!baseDatos[id].historial) baseDatos[id].historial = [];
+          baseDatos[id].historial.push({ cantidad: cantidad, motivo: motivo, fecha: fecha });
+        }
+      });
+
+      toggleSeleccionarTodos(false);
+      mostrarToast(`Ráfaga aplicada a ${seleccionados.length} estudiante(s)`);
+      await guardarEnGitHub();
     }
   </script>
 </body>
