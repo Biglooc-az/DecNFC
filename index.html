@@ -121,6 +121,14 @@
     }
 
     .btn-group .btn { margin: 0; }
+
+    .block-title {
+      text-align: left;
+      font-weight: bold;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      color: #374151;
+    }
   </style>
 </head>
 <body>
@@ -157,29 +165,36 @@
       <div>Décimas Actuales:</div>
       <div class="decimas-badge" id="profe-total-decimas">0</div>
 
-      <label><b>Selecciona el Motivo:</b></label>
-      <select id="motivoSelect">
+      <!-- SECCIÓN SUMAR DÉCIMAS -->
+      <div class="block-title">➕ Agregar Décimas:</div>
+      <select id="motivoAgregarSelect">
         <option value="Guia Completa">Guía Completa</option>
         <option value="Trabajo en clase">Trabajo en clase</option>
         <option value="Compañerismo">Compañerismo</option>
         <option value="Buena Actitud">Buena Actitud</option>
       </select>
-
-      <p><b>Agregar Décimas:</b></p>
       <div class="btn-group">
-        <button class="btn" onclick="modificarDecimas(1)">+1</button>
-        <button class="btn" onclick="modificarDecimas(2)">+2</button>
-        <button class="btn" onclick="modificarDecimas(3)">+3</button>
+        <button class="btn" onclick="modificarDecimas(1, 'motivoAgregarSelect')">+1</button>
+        <button class="btn" onclick="modificarDecimas(2, 'motivoAgregarSelect')">+2</button>
+        <button class="btn" onclick="modificarDecimas(3, 'motivoAgregarSelect')">+3</button>
       </div>
 
-      <p><b>Quitar Décimas:</b></p>
+      <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+
+      <!-- SECCIÓN RESTAR DÉCIMAS -->
+      <div class="block-title">➖ Quitar Décimas:</div>
+      <select id="motivoQuitarSelect">
+        <option value="Cobradas">Cobradas</option>
+        <option value="Mal comportamiento">Mal comportamiento</option>
+        <option value="Otro">Otro</option>
+      </select>
       <div class="btn-group">
-        <button class="btn btn-danger" onclick="modificarDecimas(-1)">-1</button>
-        <button class="btn btn-danger" onclick="modificarDecimas(-2)">-2</button>
-        <button class="btn btn-danger" onclick="modificarDecimas(-3)">-3</button>
+        <button class="btn btn-danger" onclick="modificarDecimas(-1, 'motivoQuitarSelect')">-1</button>
+        <button class="btn btn-danger" onclick="modificarDecimas(-2, 'motivoQuitarSelect')">-2</button>
+        <button class="btn btn-danger" onclick="modificarDecimas(-3, 'motivoQuitarSelect')">-3</button>
       </div>
 
-      <button class="btn btn-secondary" style="margin-top: 20px;" onclick="mostrarSeccion('pantalla-espera-profesor')">Escanear otro alumno</button>
+      <button class="btn btn-secondary" style="margin-top: 25px;" onclick="mostrarSeccion('pantalla-espera-profesor')">Escanear otro alumno</button>
       <button class="btn btn-secondary" onclick="cerrarSesionProfe()">Cerrar Sesión</button>
     </div>
 
@@ -209,12 +224,11 @@
     let esProfeAutenticado = false;
     let alumnoActualId = null;
 
-    // Base de datos local (Simulación)
+    // Obtención de datos locales
     function obtenerDatosAlumno(id) {
       const data = localStorage.getItem(`alumno_${id}`);
       if (data) return JSON.parse(data);
       
-      // Datos por defecto si es primera vez que se lee la tarjeta
       return {
         nombre: `Estudiante (${id})`,
         decimas: 0,
@@ -226,7 +240,7 @@
       localStorage.setItem(`alumno_${id}`, JSON.stringify(datos));
     }
 
-    // Inicialización y detección de parámetro en URL ?id=XXX
+    // Detección automática del parámetro ?id=XXX
     window.onload = function() {
       const urlParams = new URLSearchParams(window.location.search);
       const idParam = urlParams.get('id');
@@ -234,7 +248,6 @@
       if (idParam) {
         alumnoActualId = idParam;
         
-        // Verificar si el profesor tenía sesión activa guardada
         if (sessionStorage.getItem('profe_session') === 'true') {
           esProfeAutenticado = true;
           cargarModoProfesor(idParam);
@@ -261,7 +274,6 @@
         esProfeAutenticado = true;
         sessionStorage.setItem('profe_session', 'true');
         
-        // Si ya había leído una tarjeta antes de iniciar sesión
         if (alumnoActualId) {
           cargarModoProfesor(alumnoActualId);
         } else {
@@ -313,10 +325,10 @@
       mostrarSeccion('pantalla-gestion-profesor');
     }
 
-    function modificarDecimas(cantidad) {
+    function modificarDecimas(cantidad, selectId) {
       if (!alumnoActualId) return;
 
-      const motivo = document.getElementById('motivoSelect').value;
+      const motivo = document.getElementById(selectId).value;
       const alumno = obtenerDatosAlumno(alumnoActualId);
       
       alumno.decimas += cantidad;
