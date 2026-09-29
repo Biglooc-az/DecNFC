@@ -232,8 +232,8 @@
   </div>
 
   <script>
-    const GH_USER = "biglooc-az";   // Tu usuario de GitHub
-    const GH_REPO = "DecNFC";    // Nombre de tu repositorio
+    const GH_USER = "biglooc-az";
+    const GH_REPO = "DecNFC";
     const PIN_CORRECTO = "1976";
 
     const RAW_URL = `https://${GH_USER}.github.io/${GH_REPO}/datos.json`;
@@ -246,7 +246,7 @@
     function obtenerToken() {
       let token = localStorage.getItem('gh_token');
       if (!token) {
-        token = prompt("Ingresa tu Personal Access Token de GitHub (solo para profesor):");
+        token = prompt("Ingresa tu Personal Access Token de GitHub (Se guardará automáticamente en este navegador):");
         if (token) {
           localStorage.setItem('gh_token', token.trim());
         }
@@ -263,7 +263,6 @@
     }
 
     async function cargarBaseDatos() {
-      // 1. Cargar datos en caché local si existen
       const localCache = localStorage.getItem('local_db_decimas');
       if (localCache) {
         try {
@@ -272,9 +271,8 @@
         } catch (e) {}
       }
 
-      // 2. Intentar cargar vía GitHub Pages
       try {
-        const res = await fetch(`${RAW_URL}?nocache=${Date.now()}`);
+        const res = await fetch(`${RAW_URL}?t=${Date.now()}`);
         if (res.ok) {
           baseDatos = await res.json();
           localStorage.setItem('local_db_decimas', JSON.stringify(baseDatos));
@@ -283,22 +281,17 @@
         }
       } catch (err) {}
 
-      // 3. Fallback: Intentar cargar vía API pública de GitHub
       try {
-        const resApi = await fetch(API_URL);
+        const resApi = await fetch(`${API_URL}?t=${Date.now()}`);
         if (resApi.ok) {
           const dataApi = await resApi.json();
           fileSha = dataApi.sha;
-          const decodedContent = decodeURIComponent(escape(atob(dataApi.content)));
+          const decodedContent = decodeURIComponent(escape(atob(dataApi.content.replace(/\s/g, ''))));
           baseDatos = JSON.parse(decodedContent);
           localStorage.setItem('local_db_decimas', JSON.stringify(baseDatos));
           if (alumnoActualId) actualizarPantallas(alumnoActualId);
-        } else if (!localCache) {
-          mostrarToast("Asegúrate de haber creado el archivo datos.json", true);
         }
-      } catch (errApi) {
-        if (!localCache) mostrarToast("Error de conexión con GitHub", true);
-      }
+      } catch (errApi) {}
     }
 
     async function obtenerSha() {
@@ -442,7 +435,6 @@
         fecha: fecha
       });
 
-      // Guardar en caché local inmediato
       localStorage.setItem('local_db_decimas', JSON.stringify(baseDatos));
       actualizarPantallas(idLimpio);
       mostrarToast(`${cantidad > 0 ? '+' : ''}${cantidad} décima(s) guardadas`);
