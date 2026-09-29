@@ -236,9 +236,7 @@
     const GH_REPO = "jaaa-decimas";    // Nombre de tu repositorio
     const PIN_CORRECTO = "1976";
 
-    // URL para lectura pública desde GitHub Pages
-    const RAW_URL = `https://${GH_USER}.github.io/${GH_REPO}/datos.json?t=${Date.now()}`;
-    // URL API para escritura del profesor
+    const RAW_URL = `https://${GH_USER}.github.io/${GH_REPO}/datos.json`;
     const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/datos.json`;
 
     let baseDatos = {};
@@ -265,19 +263,41 @@
     }
 
     async function cargarBaseDatos() {
+      // 1. Cargar datos en caché local si existen
+      const localCache = localStorage.getItem('local_db_decimas');
+      if (localCache) {
+        try {
+          baseDatos = JSON.parse(localCache);
+          if (alumnoActualId) actualizarPantallas(alumnoActualId);
+        } catch (e) {}
+      }
+
+      // 2. Intentar cargar vía GitHub Pages
       try {
-        // Lectura pública sin requerir token
-        const res = await fetch(RAW_URL);
+        const res = await fetch(`${RAW_URL}?nocache=${Date.now()}`);
         if (res.ok) {
           baseDatos = await res.json();
-          if (alumnoActualId) {
-            actualizarPantallas(alumnoActualId);
-          }
-        } else {
-          mostrarToast("Crea el archivo datos.json en GitHub", true);
+          localStorage.setItem('local_db_decimas', JSON.stringify(baseDatos));
+          if (alumnoActualId) actualizarPantallas(alumnoActualId);
+          return;
         }
-      } catch (err) {
-        console.error("Error al cargar datos:", err);
+      } catch (err) {}
+
+      // 3. Fallback: Intentar cargar vía API pública de GitHub
+      try {
+        const resApi = await fetch(API_URL);
+        if (resApi.ok) {
+          const dataApi = await resApi.json();
+          fileSha = dataApi.sha;
+          const decodedContent = decodeURIComponent(escape(atob(dataApi.content)));
+          baseDatos = JSON.parse(decodedContent);
+          localStorage.setItem('local_db_decimas', JSON.stringify(baseDatos));
+          if (alumnoActualId) actualizarPantallas(alumnoActualId);
+        } else if (!localCache) {
+          mostrarToast("Asegúrate de haber creado el archivo datos.json", true);
+        }
+      } catch (errApi) {
+        if (!localCache) mostrarToast("Error de conexión con GitHub", true);
       }
     }
 
@@ -354,7 +374,7 @@
       const alumno = baseDatos[idLimpio];
 
       if (!alumno) {
-        const msgError = `ID ("${idLimpio}") no encontrada`;
+        const msgError = `ID ("${idLimpio}") no encontrada en datos.json`;
         document.getElementById('estudiante-nombre').innerText = msgError;
         document.getElementById('profe-nombre-alumno').innerText = msgError;
         document.getElementById('estudiante-total-decimas').innerText = "0";
@@ -422,6 +442,8 @@
         fecha: fecha
       });
 
+      // Guardar en caché local inmediato
+      localStorage.setItem('local_db_decimas', JSON.stringify(baseDatos));
       actualizarPantallas(idLimpio);
       mostrarToast(`${cantidad > 0 ? '+' : ''}${cantidad} décima(s) guardadas`);
 
