@@ -1,7 +1,7 @@
 {
   "EST_001": {
     "nombre": "Diego Azabache",
-    "decimas": 9,
+    "decimas": 7,
     "historial": [
       {
         "cantidad": 3,
@@ -26,6 +26,11 @@
       {
         "cantidad": -3,
         "motivo": "Cobradas",
+        "fecha": "28/9 23:13"
+      },
+      {
+        "cantidad": -2,
+        "motivo": "Mal comportamiento",
         "fecha": "28/9 23:13"
       }
     ]
